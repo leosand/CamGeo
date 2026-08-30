@@ -57,14 +57,36 @@ function makeGrid(region) {
                                 ymax.divide(CELL_SIZE_M).floor().subtract(1));
 
   var cells = colIds.map(function(c) {
-    return rowsMap(r, c);
+    return rowIds.map(function(r) {
+      var x = ee.Number(c).multiply(CELL_SIZE_M);
+      var y = ee.Number(r).multiply(CELL_SIZE_M);
+      var cell = ee.Geometry.Rectangle([x, y, x.add(CELL_SIZE_M), y.add(CELL_SIZE_M)], crs, false)
+        .transform('EPSG:4326', 1);
+      var tileId = regionName.cat('_').cat(ee.Number(c).format()).cat('_').cat(ee.Number(r).format());
+      return ee.Feature(cell).set({region: regionName, col: c, row: r, tile_id: tileId});
+    });
   }).flatten();
 
   // Keep only tiles that touch the region (border tiles are kept whole, not clipped).
   return ee.FeatureCollection(cells)
     .filter(ee.Filter.intersects('.geo', geom, null, ee.ErrorMargin(1)));
-
-  function rowsMap(r, c) {
-    return r;
-  }
 }
+
+var tiles = ee.FeatureCollection(regions.map(makeGrid)).flatten();
+print('Tile count:', tiles.size());
+print('Example tile:', tiles.first());
+
+// --------------------------------- Display ----------------------------------
+Map.centerObject(regions, 6);
+Map.addLayer(regions.style({color: 'FF0000', fillColor: '00000000'}), {}, 'Regions');
+Map.addLayer(tiles.style({color: 'FFFFFF', fillColor: '00000000', width: 1}), {}, 'Tiles 10 km');
+
+// --------------------------------- Export -----------------------------------
+// Exports the grid as a GeoJSON file to your Google Drive (folder: camgeo).
+Export.table.toDrive({
+  collection: tiles,
+  description: 'camgeo_tiles_10km',
+  folder: 'camgeo',
+  fileNamePrefix: 'camgeo_tiles_10km',
+  fileFormat: 'GeoJSON'
+});

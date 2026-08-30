@@ -1,0 +1,55 @@
+{
+  "stac_version": "1.0.0",
+  "type": "Collection",
+  "id": "camgeo-lulc",
+  "title": "CamGeo Land Use and Land Cover — Cameroon",
+  "description": "EXAMPLE FILE — placeholder links, for teaching and validation only. Annual land use and land cover (LULC) maps of 7 regions of Cameroon (Est, Sud, Adamaoua, Littoral, Ouest, Nord-Ouest, Sud-Ouest), produced from free satellite data (Sentinel-2, Landsat, Sentinel-1) with open, reproducible methods. Each item ships with a provenance manifest and an accuracy statement.",
+  "license": "CC-BY-4.0",
+  "extent": {
+    "spatial": {
+      "bbox": [[8.38, 1.65, 16.2, 13.08]]
+    },
+    "temporal": {
+      "interval": [["2017-01-01T00:00:00Z", null]]
+    }
+  },
+  "keywords": [
+    "land cover",
+    "land use",
+    "cameroon",
+    "forest",
+    "deforestation",
+    "sentinel-2",
+    "open data",
+    "machine learning"
+  ],
+  "providers": [
+    {
+      "name": "CamGeo project",
+      "description": "Open, community-built geospatial data for Cameroon",
+      "roles": ["producer", "licensor"],
+      "url": "https://github.com/leosand/CamGeo"
+    }
+  ],
+  "summaries": {
+    "camgeo:region": ["est", "sud", "adamaoua", "littoral", "ouest", "nord-ouest", "sud-ouest"],
+    "camgeo:class": [
+      "dense humid forest",
+      "degraded or secondary forest",
+      "savanna or grassland",
+      "smallholder agriculture",
+      "industrial plantation",
+      "mangrove",
+      "water",
+      "urban or built-up",
+      "bare soil or mining"
+    ]
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "./collection-example.json",
+      "type": "application/json"
+    }
+  ]
+}
