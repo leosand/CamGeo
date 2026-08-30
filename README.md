@@ -17,7 +17,7 @@ CamGeo adapts their methods to Cameroon: local classes, local validation, local 
 
 ## Scope of version 0.1 (the MVP)
 
-Our minimum viable product (MVP) covers **4 regions of Cameroon**, chosen to represent the country's main landscapes:
+Our minimum viable product (MVP) covers **7 regions of Cameroon** — about 297,000 km², or 62% of the national territory. They were chosen to represent the country's main landscapes, from dense rainforest to the western highlands:
 
 | Region | Main landscape | Why it matters |
 |---|---|---|
@@ -25,6 +25,11 @@ Our minimum viable product (MVP) covers **4 regions of Cameroon**, chosen to rep
 | South (Sud) | Forest and farming front | Cocoa, smallholder deforestation |
 | Adamawa (Adamaoua) | Forest–savanna transition | Fast agricultural and pastoral change |
 | Littoral | Coast and city | Industrial plantations, mangroves, Douala urban growth |
+| West (Ouest) | High plateaus (Grassfields) | Very dense population, intensive farming, erosion |
+| Northwest (Nord-Ouest) | Highlands, montane grassland | Pastoralism, farming on slopes, montane forest loss |
+| Southwest (Sud-Ouest) | Humid forest, Mount Cameroon | Agro-industrial plantations, cocoa, mangroves |
+
+The last three regions form the **Grand Ouest**, a block of highlands and densely farmed landscapes that is a hard — and therefore valuable — test for any classification method.
 
 - **Time period**: 2017 to present (the Sentinel-2 satellite era), one map per year
 - **Spatial detail**: 10 to 30 metres per pixel

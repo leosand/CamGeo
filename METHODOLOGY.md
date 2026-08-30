@@ -9,11 +9,11 @@ Our rule: **copy what is proven, adapt what is local, document everything.**
 
 ## 1. Goal
 
-Produce annual land use and land cover (LULC) maps of 4 pilot regions of Cameroon, plus the labelled training data used to make them — all open, versioned, and reproducible.
+Produce annual land use and land cover (LULC) maps of 7 pilot regions of Cameroon, plus the labelled training data used to make them — all open, versioned, and reproducible.
 
 ## 2. Study area
 
-Four regions, chosen to cover Cameroon's main landscape types (biomes):
+Seven regions (~297,000 km², about 62% of Cameroon), chosen to cover the country's main landscape types (biomes):
 
 | Region | Approx. area | Landscape | Main change drivers to detect |
 |---|---|---|---|
@@ -21,6 +21,11 @@ Four regions, chosen to cover Cameroon's main landscape types (biomes):
 | South (Sud) | ~47,000 km² | Forest and farming front | Cocoa, smallholder farming |
 | Adamawa (Adamaoua) | ~64,000 km² | Forest–savanna transition | Pastoral and agricultural expansion |
 | Littoral | ~20,000 km² | Coast, mangrove, city | Plantations, urban growth |
+| West (Ouest) | ~14,000 km² | High plateaus (Grassfields) | Farm intensification, erosion, gallery forest loss |
+| Northwest (Nord-Ouest) | ~17,000 km² | Highlands, montane grassland | Overgrazing, farming on slopes, montane forest loss |
+| Southwest (Sud-Ouest) | ~25,000 km² | Humid forest, Mount Cameroon | Plantation expansion, cocoa, urban growth |
+
+The **Grand Ouest** block (West, Northwest, Southwest) adds highland and montane landscapes with very dense smallholder farming and agro-industrial plantations. It is the hardest test of the method: montane forest can look like grassland, and plantations can look like forest. If the pipeline works there, it works anywhere in the country.
 
 **Tiling**: each region is split into regular tiles (for example 10 km × 10 km) so work can be divided among contributors and processed in parallel.
 
@@ -28,17 +33,19 @@ Four regions, chosen to cover Cameroon's main landscape types (biomes):
 
 | # | Class | Simple definition |
 |---|---|---|
-| 1 | Dense humid forest | Tall, closed-canopy natural forest |
+| 1 | Dense humid forest | Tall, closed-canopy natural forest (lowland and montane) |
 | 2 | Degraded / secondary forest | Forest visibly disturbed (logging gaps, regrowth) |
-| 3 | Savanna / grassland | Open vegetation, grasses, scattered trees |
+| 3 | Savanna / grassland | Open vegetation, grasses, scattered trees (incl. montane grassland) |
 | 4 | Smallholder agriculture | Small fields, mixed crops, slash-and-burn mosaics |
-| 5 | Industrial plantation | Large uniform blocks (oil palm, banana, rubber) |
-| 6 | Mangrove | Coastal tidal forest |
+| 5 | Industrial plantation | Large uniform blocks (oil palm, banana, rubber, tea) |
+| 6 | Mangrove | Coastal tidal forest (Littoral and Southwest only) |
 | 7 | Water | Rivers, lakes, reservoirs |
 | 8 | Urban / built-up | Cities, villages, roads |
-| 9 | Bare soil / mining | Exposed ground, quarries, mine sites |
+| 9 | Bare soil / mining | Exposed ground, quarries, mine sites, eroded slopes |
 
-The legend is versioned. Changing it is a Level 3 governance decision (see [GOVERNANCE.md](../GOVERNANCE.md)).
+Notes:
+- A class that does not exist in a region (e.g. mangrove in Adamawa) is simply not mapped there.
+- Montane forests of the Grand Ouest currently fall under classes 1–2. Splitting them into a dedicated class is a possible legend change (a Level 3 governance decision, see [GOVERNANCE.md](../GOVERNANCE.md)).
 
 ## 4. Input data
 
@@ -49,7 +56,7 @@ All inputs are free to use. Details and licences: [docs/DATA_POLICY.md](DATA_POL
 | Sentinel-2 (Copernicus) | 10–20 m | Main optical imagery, 2017–present |
 | Landsat 8/9 (USGS) | 30 m | Historical depth, backup optical data |
 | Sentinel-1 (radar/SAR) | 10 m | Seeing through clouds in humid zones |
-| SRTM / Copernicus DEM | 30 m | Elevation, slope, terrain features |
+| SRTM / Copernicus DEM | 30 m | Elevation, slope, terrain features (critical in the Grand Ouest highlands) |
 | CHIRPS rainfall | ~5 km | Climate context features |
 | OpenStreetMap | vector | Roads, villages, built areas |
 | WRI / MINFOF Forest Atlas of Cameroon | vector | Forest concessions, protected areas |
@@ -68,12 +75,13 @@ Define region boundaries and tiles. Store as versioned vector files.
 For each year, build one composite image per tile from all usable satellite scenes:
 - In humid forest zones, a single month rarely has cloud-free images — we use **compositing windows of 3 to 6 months** (per-pixel best-pixel selection).
 - Where optical data is still missing, Sentinel-1 radar fills the gap.
+- In the highlands, we preferentially weight dry-season scenes to separate grassland from cropland.
 
 ### Stage 3 — Feature extraction
 For every pixel, compute the inputs the classifier will learn from:
 - Spectral bands (visible, near-infrared, shortwave infrared)
 - Vegetation and water indices: **NDVI** (vegetation greenness), **NDWI** (water), **NDBI** (built-up areas)
-- Terrain features from the DEM: elevation, slope, aspect
+- Terrain features from the DEM: elevation, slope, aspect — essential to separate montane forest from lowland forest and to model erosion-prone farmland
 - Optional texture and seasonal statistics
 
 ### Stage 4 — Training samples
@@ -81,11 +89,11 @@ Labelled examples are the heart of the method (this is where FLAIR-HUB sets the 
 - Collected by **visual interpretation** of very high resolution imagery by trained contributors, using a free tool (e.g. Collect Earth Online).
 - Reuse of existing open labels (e.g. Cam-ForestNet classes) where licences allow.
 - Every sample stores: location, class, date, interpreter, confidence, source image.
-- Target for v0.1: **at least 200 samples per class per region**, reviewed by a second person.
+- Target for v0.1: **at least 200 samples per class per region** (for classes present in that region), reviewed by a second person.
 
 ### Stage 5 — Classification
 - Version 0.1 uses **Random Forest** (RF), a robust machine learning algorithm — the same family MapBiomas uses — run inside Google Earth Engine (GEE).
-- Training is done **per region** (like MapBiomas classifies biome by biome), because a cocoa field and a savanna look different in the East than in Adamawa.
+- Training is done **per region** (like MapBiomas classifies biome by biome), because a cocoa field in the Southwest and a maize field in the Northwest do not look alike.
 - Later versions may add deep learning models (inspired by FLAIR-HUB's multimodal networks) as an experimental track, benchmarked against the RF baseline.
 
 ### Stage 6 — Post-processing filters
@@ -97,7 +105,7 @@ All filter rules are scripted and versioned, never manual edits.
 ### Stage 7 — Validation
 - An **independent set of samples** (never used in training) is interpreted by the Validation WG.
 - We publish a **confusion matrix** per region, plus standard metrics: **Overall Accuracy (OA)** — share of correctly labelled samples — and per-class **F1 score** (balance of precision and recall).
-- Target for v0.1: OA ≥ 80 % for the forest / non-forest distinction; per-class results published honestly even when lower.
+- Target for v0.1: OA ≥ 80 % for the forest / non-forest distinction; per-class results published honestly even when lower. We expect and report harder classes in the Grand Ouest (montane forest vs grassland; plantation vs forest).
 
 ### Stage 8 — Publication
 - Maps as **Cloud-Optimized GeoTIFFs (COGs)** — raster files readable directly over HTTP.
@@ -120,7 +128,7 @@ Following MapBiomas, maps are published as numbered **Collections** (0.1, 0.2, 1
 ## 8. Ethics, sensitivity and limitations
 
 - We never publish precise locations that could endanger people or ecosystems (e.g. exact positions of endangered species or sensitive community sites) — such data is aggregated or masked (see [docs/DATA_POLICY.md](DATA_POLICY.md)).
-- A 10–30 m satellite map is not a legal document: our maps do not define land ownership or official boundaries.
+- A 10–30 m satellite map is not a legal document: our maps do not define land ownership or official boundaries. This matters especially in areas with land disputes.
 - Cloud cover, smoke and sensor limits create uncertainty; we publish per-pixel quality flags instead of hiding it.
 
 ## 9. How to challenge this methodology
@@ -129,4 +137,4 @@ This document is a living standard. Propose changes via an RFC issue (Level 3 de
 
 ---
 
-*Version 0.1 — August 2026. Inspired by MapBiomas ATBDs and the FLAIR-HUB dataset paper.*
+*Version 0.2 — August 2026 (scope extended to 7 regions, adding the Grand Ouest). Inspired by MapBiomas ATBDs and the FLAIR-HUB dataset paper.*
