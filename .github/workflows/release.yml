@@ -1,0 +1,92 @@
+# CamGeo release workflow — the ONLY allowed path to tags and releases.
+# Trigger: manual (Actions → Release → Run workflow), when a delivery gate
+# defined in docs/RELEASE_PROCESS.md is reached.
+# The workflow is delivery-gated: it refuses to release if the quality gate
+# fails or if CHANGELOG.md has no section for the requested version.
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag, format vMAJOR.MINOR.PATCH (e.g. v0.2.0)"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark as pre-release (keep true until Collection 1.0)"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  quality-gate:
+    name: Quality gate — tests, STAC, changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version format
+        run: |
+          echo "${{ inputs.version }}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+            || { echo "Bad version format: ${{ inputs.version }} (expected vX.Y.Z)"; exit 1; }
+
+      - name: Check CHANGELOG has a section for this version
+        run: |
+          grep -qF "## [${{ inputs.version }}]" CHANGELOG.md \
+            || { echo "CHANGELOG.md has no section for ${{ inputs.version }} — add it first"; exit 1; }
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: python/requirements-dev.txt
+
+      - name: Run Python tests
+        run: |
+          pip install -r python/requirements-dev.txt
+          cd python && PYTHONPATH=. pytest tests/ -q
+
+      - name: Validate STAC examples
+        run: |
+          pip install stac-validator
+          stac_validator stac/examples/collection-example.json
+          stac_validator stac/examples/item-example.json
+
+  release:
+    name: Tag and publish the (pre-)release
+    needs: quality-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract release notes from CHANGELOG
+        run: |
+          awk '/^## \[${{ inputs.version }}\]/{flag=1; next} /^## \[/{if(flag) exit} flag' CHANGELOG.md > RELEASE_NOTES.md
+          test -s RELEASE_NOTES.md || { echo "Empty release notes"; exit 1; }
+          cat >> RELEASE_NOTES.md << 'EOF'
+
+          ---
+          **Release attributes** — Gate: see docs/RELEASE_PROCESS.md §3 · Quality gate: passed (pytest + stac-validator) · Licences: code Apache-2.0, data CC-BY-4.0 · Attributions: see NOTICE · Data policy: docs/DATA_POLICY.md
+          EOF
+
+      - name: Create and push tag
+        run: |
+          git config user.name "camgeo-release-bot"
+          git config user.email "camgeo-release-bot@users.noreply.github.com"
+          git tag -a "${{ inputs.version }}" -m "CamGeo ${{ inputs.version }}"
+          git push origin "${{ inputs.version }}"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: CamGeo ${{ inputs.version }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ inputs.prerelease }}
+          target_commitish: main

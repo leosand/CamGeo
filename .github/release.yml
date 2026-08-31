@@ -1,0 +1,28 @@
+# Configuration for GitHub's automatically generated release notes.
+# Maps our label taxonomy (docs/LABELS.md) to release note sections.
+
+changelog:
+  exclude:
+    labels:
+      - "ignore-for-release"
+  categories:
+    - title: "🚀 Features and pipeline"
+      labels:
+        - "type: feature"
+    - title: "🐛 Fixes"
+      labels:
+        - "type: bug"
+    - title: "🗂️ Data and samples"
+      labels:
+        - "type: data"
+        - "validation"
+    - title: "📚 Documentation"
+      labels:
+        - "type: docs"
+    - title: "🏛️ Governance"
+      labels:
+        - "type: governance"
+        - "rfc"
+    - title: "Other changes"
+      labels:
+        - "*"

@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: >-
+  If you use CamGeo data, code or methods, please cite the project as
+  below.
+title: "CamGeo — Open, AI-ready geospatial data for Cameroon"
+type: software
+authors:
+  - name: "CamGeo contributors"
+repository-code: "https://github.com/leosand/CamGeo"
+license: Apache-2.0
+notes: "Data and documentation are licensed CC-BY-4.0. See NOTICE for attributions."
+version: 0.1.0
+date-released: "2026-08-30"
+keywords:
+  - land cover
+  - land use
+  - Cameroon
+  - forest monitoring
+  - satellite imagery
+  - machine learning
+  - open data
