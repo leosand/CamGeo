@@ -15,6 +15,11 @@ JavaScript scripts for **Google Earth Engine (GEE)** — the free, non-commercia
 | 1 | `tiling/regions_grid.js` | Stage 1 — study area and tiling | 10 km × 10 km tile grid for the 7 regions |
 | 2 | `mosaics/s2_annual_composite.js` | Stage 2 — cloud-free mosaics | Annual Sentinel-2 composite per region |
 | 3 | `features/feature_stack.js` | Stage 3 — feature extraction | Stack: bands + NDVI/NDWI/NDBI + terrain |
+| 4 | `sampling/generate_sample_points.js` | Stage 4a — sampling design | Random points CSV for the labelling tool |
+| 5 | `classification/classify_region.js` | Stage 5 — Random Forest | Raw LULC map + validation table (needs samples asset) |
+| 6 | `filters/postprocess_filters.js` | Stage 6 — cleaning | Filtered map (spatial + temporal) |
+
+Stages 7 (accuracy reports) and 8 (GeoParquet/STAC exports) run in Python — see `../python/`.
 
 Each script is standalone (the GEE editor runs one script at a time). Configuration is at the top of each file.
 
