@@ -1,0 +1,57 @@
+{
+  "type": "FeatureCollection",
+  "name": "camgeo_demo_points",
+  "_comment": "DEMO FILE — five teaching points so the viewer shows something before real samples exist. Replace with real reviewed samples at Collection 0.1.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "sample_id": "DEMO_Est_001",
+        "region": "Est",
+        "class_code": 1,
+        "class_name": "dense humid forest"
+      },
+      "geometry": { "type": "Point", "coordinates": [14.112, 3.087] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sample_id": "DEMO_Sud-Ouest_002",
+        "region": "Sud-Ouest",
+        "class_code": 5,
+        "class_name": "industrial plantation"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.7021, 4.5832] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sample_id": "DEMO_Ouest_003",
+        "region": "Ouest",
+        "class_code": 4,
+        "class_name": "smallholder agriculture"
+      },
+      "geometry": { "type": "Point", "coordinates": [10.4125, 5.4721] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sample_id": "DEMO_Adamaoua_004",
+        "region": "Adamaoua",
+        "class_code": 3,
+        "class_name": "savanna / grassland"
+      },
+      "geometry": { "type": "Point", "coordinates": [13.583, 7.35] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sample_id": "DEMO_Littoral_005",
+        "region": "Littoral",
+        "class_code": 8,
+        "class_name": "urban / built-up"
+      },
+      "geometry": { "type": "Point", "coordinates": [9.7679, 4.0511] }
+    }
+  ]
+}

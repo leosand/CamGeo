@@ -1,0 +1,58 @@
+# CamGeo continuous integration (CI)
+# Runs on every push to main and every pull request.
+# Jobs: Python quality (lint, format, tests) + STAC example validation.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: Python — lint, format, tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: python/requirements-dev.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check camgeo tests
+
+      - name: Format check (black)
+        run: black --check camgeo tests
+
+      - name: Unit tests (pytest)
+        run: pytest tests/ -v
+        env:
+          PYTHONPATH: .
+
+  stac:
+    name: STAC examples — validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install stac-validator
+        run: pip install stac-validator
+
+      - name: Validate STAC example files
+        run: |
+          stac_validator stac/examples/collection-example.json
+          stac_validator stac/examples/item-example.json
