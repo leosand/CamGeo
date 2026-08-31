@@ -1,0 +1,4 @@
+sample_id,lon,lat,region,class_code,class_name,label_date,imagery_date,interpreter,confidence,source,review_status,reviewer,notes
+EXAMPLE_Ouest_0001,10.4125,5.4721,Ouest,4,smallholder agriculture,2026-09-15,2024,contributor_demo,high,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — mosaic of small fields on plateau"
+EXAMPLE_Sud-Ouest_0002,9.7021,4.5832,Sud-Ouest,5,industrial plantation,2026-09-15,2024,contributor_demo,medium,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — regular palm block, checked against forest"
+EXAMPLE_Est_0003,14.1120,3.0870,Est,1,dense humid forest,2026-09-15,2024,contributor_demo,high,ceo,pending,,"EXAMPLE ROW — closed canopy, no visible disturbance"
