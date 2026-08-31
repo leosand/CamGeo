@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CamGeo Viewer — Land cover of Cameroon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    #map { position: absolute; inset: 0; }
+    #panel {
+      position: absolute; top: 12px; left: 12px; width: 280px;
+      background: rgba(255, 255, 255, 0.95); border-radius: 8px;
+      padding: 12px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      font-size: 13px; max-height: 90vh; overflow-y: auto;
+    }
+    #panel h1 { font-size: 16px; margin: 0 0 4px; }
+    #panel p { margin: 4px 0; color: #444; }
+    .layer-toggle { display: block; margin: 6px 0; }
+    .legend-item { display: flex; align-items: center; margin: 2px 0; }
+    .legend-swatch {
+      width: 14px; height: 14px; border-radius: 3px;
+      margin-right: 8px; border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0;
+    }
+    .note { font-size: 11px; color: #777; margin-top: 8px; }
+    a { color: #1d76db; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="panel">
+    <h1>CamGeo Viewer</h1>
+    <p>Land use and land cover of Cameroon — open data by the <a href="https://github.com/leosand/CamGeo">CamGeo project</a>.</p>
+    <div id="toggles">
+      <label class="layer-toggle"><input type="checkbox" id="toggle-regions" checked /> Region boundaries</label>
+      <label class="layer-toggle"><input type="checkbox" id="toggle-points" checked /> Sample points (demo)</label>
+      <label class="layer-toggle"><input type="checkbox" id="toggle-lulc" disabled /> LULC map (available at Collection 0.1)</label>
+    </div>
+    <hr />
+    <div id="legend"></div>
+    <p class="note" id="status">Loading…</p>
+  </div>
+
+  <script>
+    // ------------------------------------------------------------------
+    // CamGeo public viewer (MapLibre GL JS, no build step).
+    // Basemap: OpenStreetMap raster tiles. Data: local GeoJSON files.
+    // To display a published LULC Cloud-Optimized GeoTIFF (COG), set
+    // LULC_COG_URL below — see README.md for instructions.
+    // ------------------------------------------------------------------
+    var LULC_COG_URL = null; // e.g. 'https://…/camgeo_lulc_littoral_2024_cog.tif'
+
+    // Class legend — MUST stay in sync with METHODOLOGY.md §3 and the
+    // palette in gee/classification/classify_region.js.
+    var CLASSES = [
+      { code: 1, name: 'Dense humid forest', color: '#006400' },
+      { code: 2, name: 'Degraded / secondary forest', color: '#7a9900' },
+      { code: 3, name: 'Savanna / grassland', color: '#c8d47a' },
+      { code: 4, name: 'Smallholder agriculture', color: '#e8a33d' },
+      { code: 5, name: 'Industrial plantation', color: '#8B4513' },
+      { code: 6, name: 'Mangrove', color: '#2e8b8b' },
+      { code: 7, name: 'Water', color: '#1f5fd0' },
+      { code: 8, name: 'Urban / built-up', color: '#d43d2a' },
+      { code: 9, name: 'Bare soil / mining', color: '#c2c2c2' }
+    ];
+
+    var map = new maplibregl.Map({
+      container: 'map',
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors'
+          }
+        },
+        layers: [{ id: 'osm', type: 'raster', source: 'osm' }]
+      },
+      center: [11.5, 5.0], // roughly central Cameroon
+      zoom: 6
+    });
+    map.addControl(new maplibregl.NavigationControl());
+    map.addControl(new maplibregl.ScaleControl());
+
+    function setStatus(text) {
+      document.getElementById('status').textContent = text;
+    }
+
+    // Build the legend.
+    var legend = document.getElementById('legend');
+    CLASSES.forEach(function (c) {
+      var item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = '<span class="legend-swatch" style="background:' + c.color + '"></span>' + c.code + '. ' + c.name;
+      legend.appendChild(item);
+    });
+
+    map.on('load', function () {
+      // --- Region boundaries (produced by gee/tiling/regions_grid.js export) ---
+      fetch('data/regions.geojson')
+        .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
+        .then(function (geojson) {
+          map.addSource('regions', { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: 'regions-outline', type: 'line', source: 'regions',
+            paint: { 'line-color': '#e63946', 'line-width': 2 }
+          });
+          bindToggle('toggle-regions', 'regions-outline');
+          setStatus('Regions loaded.');
+        })
+        .catch(function () {
+          setStatus('Region boundaries not found — export them with gee/tiling/regions_grid.js (see viewer/README.md).');
+        });
+
+      // --- Demo sample points (small teaching file, replace with real data) ---
+      fetch('data/demo_points.geojson')
+        .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
+        .then(function (geojson) {
+          map.addSource('points', { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: 'sample-points', type: 'circle', source: 'points',
+            paint: {
+              'circle-radius': 5,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#ffffff',
+              'circle-color': [
+                'match', ['get', 'class_code'],
+                1, '#006400', 2, '#7a9900', 3, '#c8d47a', 4, '#e8a33d',
+                5, '#8B4513', 6, '#2e8b8b', 7, '#1f5fd0', 8, '#d43d2a',
+                9, '#c2c2c2', '#999999'
+              ]
+            }
+          });
+          bindToggle('toggle-points', 'sample-points');
+          // Click a point to see its attributes.
+          map.on('click', 'sample-points', function (e) {
+            var p = e.features[0].properties;
+            new maplibregl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML('<b>' + p.sample_id + '</b><br/>Class: ' + p.class_name + '<br/>Region: ' + p.region)
+              .addTo(map);
+          });
+        })
+        .catch(function () { /* demo points optional */ });
+
+      // --- Optional LULC COG layer via a TiTiler endpoint ---
+      if (LULC_COG_URL) {
+        var tilesUrl = 'https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url='
+          + encodeURIComponent(LULC_COG_URL);
+        map.addSource('lulc', { type: 'raster', tiles: [tilesUrl], tileSize: 256 });
+        map.addLayer({ id: 'lulc-layer', type: 'raster', source: 'lulc' }, 'regions-outline');
+        var toggle = document.getElementById('toggle-lulc');
+        toggle.disabled = false;
+        toggle.checked = true;
+        bindToggle('toggle-lulc', 'lulc-layer');
+      }
+    });
+
+    function bindToggle(inputId, layerId) {
+      document.getElementById(inputId).addEventListener('change', function (e) {
+        map.setLayoutProperty(layerId, 'visibility', e.target.checked ? 'visible' : 'none');
+      });
+    }
+  </script>
+</body>
+</html>
