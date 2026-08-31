@@ -50,11 +50,13 @@ jobs:
           pip install -r python/requirements-dev.txt
           cd python && PYTHONPATH=. pytest tests/ -q
 
+      # Note: since stac-validator v3, the CLI command is "stac-validator"
+      # (with a hyphen). The old underscore form "stac_validator" no longer exists.
       - name: Validate STAC examples
         run: |
           pip install stac-validator
-          stac_validator stac/examples/collection-example.json
-          stac_validator stac/examples/item-example.json
+          stac-validator stac/examples/collection-example.json
+          stac-validator stac/examples/item-example.json
 
   release:
     name: Tag and publish the (pre-)release

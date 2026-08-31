@@ -11,12 +11,12 @@ These are **teaching examples**: links (`href`) are placeholders. They will be r
 
 ## Validate the examples
 
-Free tools:
+Free tools (note: since stac-validator v3, the command is `stac-validator` with a hyphen):
 
 ```bash
 pip install stac-validator
-stac_validator examples/collection-example.json
-stac_validator examples/item-example.json
+stac-validator examples/collection-example.json
+stac-validator examples/item-example.json
 ```
 
 ## Notes
