@@ -1,0 +1,46 @@
+CamGeo
+Copyright 2026 CamGeo contributors
+
+This project is licensed under the Apache License, Version 2.0 (see LICENSE).
+Data and documentation produced by CamGeo are licensed under Creative Commons
+Attribution 4.0 (CC-BY-4.0) — see docs/DATA_POLICY.md.
+
+========================================================================
+Methodological acknowledgements
+========================================================================
+
+CamGeo's methodology is inspired by two open reference projects. No code or
+data from these projects is included in this repository.
+
+1. MapBiomas (Brazil) — https://mapbiomas.org
+   Annual land use and land cover mapping approach: biome-by-biome
+   classification in Google Earth Engine, annual numbered collections, and
+   open method documents (ATBDs) published with each release.
+   MapBiomas data is distributed under CC-BY-SA; MapBiomas code repositories
+   carry their own licences (including GPL-3.0 and MPL-2.0 depending on the
+   repository). None of their code or data is redistributed here.
+
+2. FLAIR-HUB (IGN, France) — https://ignf.github.io/FLAIR/
+   AI-ready dataset design: expert annotation, multi-sensor inputs, open
+   benchmarks, and dataset distribution on Hugging Face.
+   FLAIR-HUB data and models are distributed under Licence Ouverte 2.0
+   (Etalab). None of their code or data is redistributed here.
+
+========================================================================
+Input data sources (used as processing inputs; redistributed only where
+their licence explicitly allows it)
+========================================================================
+
+- Sentinel-1 / Sentinel-2 imagery (Copernicus programme, ESA) — free and open
+- Landsat imagery (USGS/NASA) — public domain
+- SRTM / Copernicus DEM — free and open
+- CHIRPS rainfall (UCSB) — public
+- OpenStreetMap — Open Database Licence (ODbL); used only as input features,
+  no OSM database is republished (see docs/DATA_POLICY.md)
+- WRI / MINFOF Forest Atlas of Cameroon — per-layer licences; verify each
+  layer before reuse
+- Cam-ForestNet research dataset — mixed licences (parts CC-BY-4.0; Planet
+  imagery under NICFI terms — never redistributed)
+
+If you believe this file omits a required attribution, please open an issue.
+Full data rules: docs/DATA_POLICY.md
