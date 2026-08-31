@@ -11,12 +11,11 @@ These are **teaching examples**: links (`href`) are placeholders. They will be r
 
 ## Validate the examples
 
-Free tools (note: since stac-validator v3, the command is `stac-validator` with a hyphen):
+The CI validates these files with pystac (the official STAC Python library) via `../python/tools/validate_stac_examples.py`, which prints the exact error if a file is invalid. To run it locally from the repository root:
 
 ```bash
-pip install stac-validator
-stac-validator examples/collection-example.json
-stac-validator examples/item-example.json
+pip install "pystac[validation]"
+python python/tools/validate_stac_examples.py
 ```
 
 ## Notes

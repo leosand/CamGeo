@@ -49,12 +49,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install stac-validator
-        run: pip install stac-validator
+      # Validation is done with pystac (official STAC library) through our
+      # own script, which prints the exact error if a file is invalid.
+      - name: Install pystac with validation support
+        run: pip install "pystac[validation]"
 
-      # Note: since stac-validator v3, the CLI command is "stac-validator"
-      # (with a hyphen). The old underscore form "stac_validator" no longer exists.
       - name: Validate STAC example files
-        run: |
-          stac-validator stac/examples/collection-example.json
-          stac-validator stac/examples/item-example.json
+        run: python python/tools/validate_stac_examples.py

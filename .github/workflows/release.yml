@@ -50,13 +50,12 @@ jobs:
           pip install -r python/requirements-dev.txt
           cd python && PYTHONPATH=. pytest tests/ -q
 
-      # Note: since stac-validator v3, the CLI command is "stac-validator"
-      # (with a hyphen). The old underscore form "stac_validator" no longer exists.
+      # Validation is done with pystac (official STAC library) through our
+      # own script, which prints the exact error if a file is invalid.
       - name: Validate STAC examples
         run: |
-          pip install stac-validator
-          stac-validator stac/examples/collection-example.json
-          stac-validator stac/examples/item-example.json
+          pip install "pystac[validation]"
+          python python/tools/validate_stac_examples.py
 
   release:
     name: Tag and publish the (pre-)release
@@ -74,7 +73,7 @@ jobs:
           cat >> RELEASE_NOTES.md << 'EOF'
 
           ---
-          **Release attributes** — Gate: see docs/RELEASE_PROCESS.md §3 · Quality gate: passed (pytest + stac-validator) · Licences: code Apache-2.0, data CC-BY-4.0 · Attributions: see NOTICE · Data policy: docs/DATA_POLICY.md
+          **Release attributes** — Gate: see docs/RELEASE_PROCESS.md §3 · Quality gate: passed (pytest + STAC validation) · Licences: code Apache-2.0, data CC-BY-4.0 · Attributions: see NOTICE · Data policy: docs/DATA_POLICY.md
           EOF
 
       - name: Create and push tag
