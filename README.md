@@ -2,6 +2,10 @@
 
 **Open, AI-ready geospatial data for Cameroon — built in the open, by a community.**
 
+[![Release](https://img.shields.io/github/v/release/leosand/CamGeo?include_prereleases&label=latest%20release)](https://github.com/leosand/CamGeo/releases) [![License: Apache-2.0](https://img.shields.io/badge/code-Apache--2.0-blue)](LICENSE) [![Data: CC-BY-4.0](https://img.shields.io/badge/data-CC--BY--4.0-green)](NOTICE)
+
+*(Badges render fully once the repository is public.)*
+
 ## What is CamGeo?
 
 CamGeo is an open science project. Our goal is to produce detailed, well-documented maps and datasets of Cameroon that artificial intelligence (AI) models can learn from directly.
@@ -15,9 +19,13 @@ We are inspired by two reference projects:
 
 CamGeo adapts their methods to Cameroon: local classes, local validation, local partners. No code or data from these projects is included — see [NOTICE](NOTICE).
 
+## Current status
+
+**[v0.1.0 (pre-release)](https://github.com/leosand/CamGeo/releases/tag/v0.1.0)** — full project framing and pipeline skeleton published 2026-08-31. No data products yet. Next gate: G1, first pixels (issue #1). Track progress in [docs/ROADMAP.md](docs/ROADMAP.md) and the [release process](docs/RELEASE_PROCESS.md).
+
 ## Scope of version 0.1 (the MVP)
 
-Our minimum viable product (MVP) covers **7 regions of Cameroon** — about 297,000 km², or 62% of the national territory. They were chosen to represent the country's main landscapes, from dense rainforest to the western highlands:
+Our minimum viable product (MVP) covers **7 regions of Cameroon** — about 297,000 km2, or 62% of the national territory. They were chosen to represent the country's main landscapes, from dense rainforest to the western highlands:
 
 | Region | Main landscape | Why it matters |
 |---|---|---|
@@ -60,6 +68,9 @@ CamGeo/
 ├── METHODOLOGY.md       ← the full scientific and technical method
 ├── CONTRIBUTING.md      ← how to join and contribute
 ├── CODE_OF_CONDUCT.md   ← community rules
+├── CHANGELOG.md         ← what changed in each release
+├── CITATION.cff         ← how to cite this project
+├── SECURITY.md          ← how to report vulnerabilities
 ├── LICENSE              ← Apache-2.0 (code)
 ├── NOTICE               ← attributions: inspirations (MapBiomas, FLAIR-HUB) and input data sources
 ├── gee/                 ← Google Earth Engine pipeline (Stages 1–6)
@@ -69,18 +80,19 @@ CamGeo/
 ├── viewer/              ← public web map (MapLibre)
 ├── docs/
 │   ├── ROADMAP.md       ← phases, timeline, kill criteria
+│   ├── RELEASE_PROCESS.md ← delivery gates and how releases are cut
 │   ├── ARCHITECTURE.md  ← technical stack and data flow
 │   ├── DATA_POLICY.md   ← licences, provenance, sensitive data rules
 │   ├── GLOSSARY.md      ← every acronym and technical term, defined
 │   ├── RECRUITMENT.md   ← contributor outreach plan
 │   ├── LABELS.md        ← issue/PR label taxonomy
 │   └── LABELLING_GUIDE.md ← how to label training samples
-└── .github/             ← CI, pull request and issue templates
+└── .github/             ← CI, release automation, issue/PR templates
 ```
 
 ## How to contribute
 
-We welcome developers, geospatial experts, ecologists, students, and anyone with local knowledge of Cameroon. Read [CONTRIBUTING.md](CONTRIBUTING.md), then pick an open issue or propose your own.
+We welcome developers, geospatial experts, ecologists, students, and anyone with local knowledge of Cameroon. Read [CONTRIBUTING.md](CONTRIBUTING.md), then pick an open issue or propose your own. Current priorities live in the gate issues ([#1–#4](https://github.com/leosand/CamGeo/issues)).
 
 ## Governance (short version)
 
@@ -101,10 +113,11 @@ CamGeo is run **collegially**: anyone can propose anything, working groups decid
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Make your first contribution |
 | [NOTICE](NOTICE) | Check attributions and third-party licences |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | See where the project is going |
+| [docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md) | Understand how releases ship |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Understand the technical stack |
 | [docs/DATA_POLICY.md](docs/DATA_POLICY.md) | Understand data licences and sensitivity rules |
 | [docs/GLOSSARY.md](docs/GLOSSARY.md) | Look up any acronym or technical term |
 
 ## Contact
 
-Open an issue in this repository, or reach out through the community channels listed in [CONTRIBUTING.md](CONTRIBUTING.md).
+Open an issue in this repository, or reach out through the community channels listed in [CONTRIBUTING.md](CONTRIBUTING.md). Releases: [github.com/leosand/CamGeo/releases](https://github.com/leosand/CamGeo/releases).
