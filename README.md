@@ -13,7 +13,7 @@ We are inspired by two reference projects:
 - **MapBiomas** (Brazil, mapbiomas.org): annual LULC maps produced since 1985 with free satellite data, fully open code and open methods.
 - **FLAIR-HUB** (France, by the national mapping agency IGN): a very large, carefully annotated dataset designed to train AI models, distributed on Hugging Face with open source benchmarks.
 
-CamGeo adapts their methods to Cameroon: local classes, local validation, local partners.
+CamGeo adapts their methods to Cameroon: local classes, local validation, local partners. No code or data from these projects is included — see [NOTICE](NOTICE).
 
 ## Scope of version 0.1 (the MVP)
 
@@ -61,12 +61,21 @@ CamGeo/
 ├── CONTRIBUTING.md      ← how to join and contribute
 ├── CODE_OF_CONDUCT.md   ← community rules
 ├── LICENSE              ← Apache-2.0 (code)
+├── NOTICE               ← attributions: inspirations (MapBiomas, FLAIR-HUB) and input data sources
+├── gee/                 ← Google Earth Engine pipeline (Stages 1–6)
+├── python/              ← validation and export tools (Stages 7–8)
+├── samples/             ← sample schema and templates
+├── stac/                ← STAC catalogue examples
+├── viewer/              ← public web map (MapLibre)
 ├── docs/
 │   ├── ROADMAP.md       ← phases, timeline, kill criteria
 │   ├── ARCHITECTURE.md  ← technical stack and data flow
 │   ├── DATA_POLICY.md   ← licences, provenance, sensitive data rules
-│   └── GLOSSARY.md      ← every acronym and technical term, defined
-└── .github/             ← pull request and issue templates
+│   ├── GLOSSARY.md      ← every acronym and technical term, defined
+│   ├── RECRUITMENT.md   ← contributor outreach plan
+│   ├── LABELS.md        ← issue/PR label taxonomy
+│   └── LABELLING_GUIDE.md ← how to label training samples
+└── .github/             ← CI, pull request and issue templates
 ```
 
 ## How to contribute
@@ -81,6 +90,7 @@ CamGeo is run **collegially**: anyone can propose anything, working groups decid
 
 - **Code**: Apache License 2.0 (see [LICENSE](LICENSE))
 - **Data and documentation**: Creative Commons Attribution 4.0 (CC-BY-4.0) — you can reuse everything, including commercially, as long as you credit CamGeo
+- **Attributions**: see [NOTICE](NOTICE) — CamGeo's methodology is inspired by MapBiomas and FLAIR-HUB, and our pipeline uses free input data (Sentinel, Landsat, SRTM, CHIRPS, OpenStreetMap). No third-party code or data is redistributed in this repository.
 
 ## Key documents
 
@@ -89,6 +99,7 @@ CamGeo is run **collegially**: anyone can propose anything, working groups decid
 | [GOVERNANCE.md](GOVERNANCE.md) | Understand roles, decisions, and how to become a maintainer |
 | [METHODOLOGY.md](METHODOLOGY.md) | Understand or challenge the scientific method |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Make your first contribution |
+| [NOTICE](NOTICE) | Check attributions and third-party licences |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | See where the project is going |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Understand the technical stack |
 | [docs/DATA_POLICY.md](docs/DATA_POLICY.md) | Understand data licences and sensitivity rules |
