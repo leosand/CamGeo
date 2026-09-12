@@ -1,11 +1,11 @@
 /**
- * CamGeo — Stage 3: multi-sensor feature stack
- * ---------------------------------------------
- * Builds the complete multi-sensor feature image used for classification:
+ * CamGeo — Stage 3: multi-sensor feature stack (MVP Sud Region)
+ * -------------------------------------------------------------
+ * Builds the complete multi-sensor feature image for the MVP pilot:
  *   - Sentinel-2 optical spectral bands (from Stage 2 cloud-masked composite)
  *   - Spectral indices: NDVI (greenness), NDWI (water/moisture), NDBI (built-up)
  *   - Sentinel-1 SAR C-band dual-polarization: VV, VH, and cross-ratio (VH/VV)
- *     (critical for resolving volume scattering in shaded agroforestry and canopy gaps)
+ *     (critical for resolving volume scattering in shaded cocoa agroforestry)
  *   - Topographic metrics from SRTM: elevation, slope, aspect
  *   - Climate context: annual precipitation from CHIRPS
  *
@@ -13,7 +13,7 @@
  */
 
 // ------------------------------- Config ------------------------------------
-var REGION = 'Littoral';
+var REGION = 'Sud';        // MVP focal region: Sud (cocoa belt)
 var YEAR = 2024;
 var SCALE = 20;
 // ----------------------------------------------------------------------------
@@ -45,8 +45,6 @@ var ndwi = composite.normalizedDifference(['green', 'nir']).rename('ndwi');
 var ndbi = composite.normalizedDifference(['swir1', 'nir']).rename('ndbi');
 
 // ------------------------------ Radar (Sentinel-1) --------------------------
-// C-band SAR penetrates cloud cover. The cross-ratio (VH/VV) is highly sensitive
-// to canopy roughness, structural complexity, and vegetation volume scattering.
 var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   .filterBounds(region)
   .filterDate(YEAR + '-01-01', (YEAR + 1) + '-01-01')
@@ -79,10 +77,11 @@ var stack = composite
   .addBands(rainfall)
   .toFloat();
 
-print('Feature stack bands:', stack.bandNames());
+print('Sud feature stack bands:', stack.bandNames());
 
 // --------------------------------- Display ----------------------------------
-Map.centerObject(region, 8);\nMap.addLayer(ndvi, {min: 0, max: 0.9, palette: ['white', 'green']}, 'NDVI');
+Map.centerObject(region, 7);
+Map.addLayer(ndvi, {min: 0, max: 0.9, palette: ['white', 'green']}, 'NDVI (Sud)');
 Map.addLayer(s1_ratio, {min: -15, max: -3, palette: ['blue', 'yellow', 'red']}, 'SAR VH/VV Ratio');
 
 // --------------------------------- Export -----------------------------------

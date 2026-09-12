@@ -26,11 +26,11 @@ Every pre-release on this repository must have:
 | Gate | Target version | Criteria to cut the pre-release |
 |---|---|---|
 | G0 — Framing | v0.1.0 | Repo, governance, methodology, pipeline skeleton (done 2026-08-30) |
-| G1 — First pixels | v0.2.0 | Stage 1–2 executed: tile grid exported + first mosaic visually validated on 2+ priority regions (Sud and Littoral pilot focus) |
-| G2 — First labels | v0.3.0 | ≥ 400 reviewed samples per region in the labelling tool, prioritizing dual-interpretation of shaded agroforestry (Class 3) vs dense forest (Class 1) on pilot tiles |
-| G3 — First maps & AOI metrics | v0.4.0 | Stage 5–6 run on pilot regions; GEE accuracy printed + initial parcel/AOI zonal statistics evaluated via `camgeo.parcels` |
-| G4 — Collection 0.1 | v0.9.0 | Stage 7 report published (OA ≥ 80% forest/non-forest target), STAC live, DOI minted, viewer updated, benchmark parcel integrity suite verified |
-| G5 — Collection 1.0 | v1.0.0 | Full re-validation across all 7 regions, national extension decision (Phase 4), governance review — first non-pre-release |
+| G1 — First pixels | v0.2.0 | Stage 1–2 executed: tile grid exported + cloud-free composite visually validated on the Sud pilot region |
+| G2 — First labels | v0.3.0 | ≥ 300 reviewed samples in Sud region, prioritizing dual-interpretation of shaded cocoa agroforestry (Class 3) vs dense forest (Class 1) |
+| G3 — First maps & AOI metrics | v0.4.0 | Stage 5–6 run on Sud pilot; GEE accuracy printed + parcel/AOI zonal statistics evaluated via `camgeo.parcels` |
+| G4 — Collection 0.1 (MVP) | v0.9.0 | Stage 7 report published (OA ≥ 80%, cocoa F1 ≥ 0.75), STAC live, DOI minted, viewer updated, parcel integrity suite verified |
+| G5 — Collection 1.0 | v1.0.0 | Multi-region scaling completed across all 7 regions, governance review — first non-pre-release |
 
 ## 4. How to cut a pre-release (one click)
 
@@ -58,4 +58,4 @@ A broken release is never edited silently: mark it as draft, publish a patch rel
 
 ---
 
-*Version 0.2 — August 2026.*
+*Version 0.2 — August 2026 (streamlined for Sud Cocoa Agroforestry Pilot).*

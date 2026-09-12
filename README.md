@@ -25,23 +25,22 @@ CamGeo adapts their methods to Cameroon: local classes, local validation, local 
 
 ## Scope of version 0.1 (the MVP)
 
-Our minimum viable product (MVP) covers **7 regions of Cameroon** — about 297,000 km², or 62% of the national territory. They were chosen to represent the country's main landscapes, from dense rainforest to the western highlands:
+To avoid dispersing community effort and ensure rapid, high-quality execution, **v0.1 (MVP) is laser-focused on a single primary commodity and pilot biome: Shaded Cocoa Agroforestry in the South (Sud) Region** (~47,000 km²).
 
-| Region | Main landscape | Why it matters |
-|---|---|---|
-| East (Est) | Dense humid forest | Logging, mining, forest concessions |
-| South (Sud) | Forest and farming front | Cocoa agroforestry, smallholder mosaic |
-| Adamawa (Adamaoua) | Forest–savanna transition | Fast agricultural and pastoral change |
-| Littoral | Coast and city | Industrial plantations, mangroves, Douala urban growth |
-| West (Ouest) | High plateaus (Grassfields) | Very dense population, intensive farming, erosion |
-| Northwest (Nord-Ouest) | Highlands, montane grassland | Pastoralism, farming on slopes, montane forest loss |
-| Southwest (Sud-Ouest) | Humid forest, Mount Cameroon | Agro-industrial plantations, cocoa, mangroves |
+The Sud region represents the historic production heartland of Cameroonian cocoa at the active rainforest-agriculture interface. Mastering the separation of dense humid rainforest and shaded cocoa canopies under persistent cloud cover resolves the single hardest and highest-value remote sensing bottleneck in Central Africa:
 
-The last three regions form the **Grand Ouest**, a block of highlands and densely farmed landscapes that is a hard — and therefore valuable — test for any classification method.
+| Region | Landscape | MVP Status | Why it matters |
+|---|---|---|---|
+| **South (Sud)** | **Humid forest & agroforestry** | **Active MVP Pilot** | **Cocoa agroforestry belt, primary canopy interface** |
+| Littoral | Coast, plantations & mangrove | Phase 2 Expansion | Agro-industrial plantations, Douala urban expansion |
+| East (Est) | Dense humid forest | Phase 2 Expansion | Selective logging, mining, forest concessions |
+| Grand Ouest (3 regions) | Highlands & Grassfields | Phase 2 Expansion | Intensive farming on slopes, montane forest |
+| Adamawa (Adamaoua) | Forest–savanna transition | Phase 2 Expansion | Agricultural and pastoral transition |
 
-- **Time period**: 2017 to present (the Sentinel-2 satellite era), one map per year
-- **Spatial detail**: 10 to 30 metres per pixel
-- **Classes**: 10 ecologically discriminative classes (see [METHODOLOGY.md](METHODOLOGY.md))
+- **MVP Focal Crop**: Shaded cocoa agroforestry (*Theobroma cacao* under multi-layered canopy)
+- **Time period**: 2017 to present (Sentinel-1 SAR + Sentinel-2 optical era), annual composites
+- **Spatial detail**: 10 to 20 metres per pixel
+- **Target MVP samples**: 350 high-confidence dual-interpreted samples in Sud region
 
 ## What we produce
 
@@ -74,7 +73,7 @@ CamGeo/
 ├── LICENSE              ← Apache-2.0 (code)
 ├── NOTICE               ← attributions: inspirations (MapBiomas, FLAIR-HUB) and input data sources
 ├── gee/                 ← Google Earth Engine pipeline (Stages 1–6)
-├── python/              ← validation and export tools (Stages 7–8)
+├── python/              ← validation, AOI analytics and export tools (Stages 7–8)
 ├── samples/             ← sample schema and templates
 ├── stac/                ← STAC catalogue examples
 ├── viewer/              ← public web map (MapLibre)

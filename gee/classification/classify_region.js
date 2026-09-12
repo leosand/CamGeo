@@ -1,15 +1,15 @@
 /**
- * CamGeo — Stage 5: Regional Random Forest classification
- * --------------------------------------------------------
+ * CamGeo — Stage 5: Regional Random Forest classification (Sud Cocoa Pilot)
+ * --------------------------------------------------------------------------
  * Trains a Random Forest classifier using multi-sensor features
  * (Sentinel-2 optical + Sentinel-1 SAR + DEM + Climate) against
- * reference training samples (10-class scientific legend).
+ * reference training samples for the Sud cocoa agroforestry pilot.
  */
 
 // ------------------------------- Config ------------------------------------
-var REGION = 'Littoral';
+var REGION = 'Sud';        // MVP focal region: Sud (cocoa belt)
 var YEAR = 2024;
-var SAMPLES_ASSET = 'projects/YOUR-PROJECT/assets/camgeo/samples_littoral_v01';
+var SAMPLES_ASSET = 'projects/YOUR-PROJECT/assets/camgeo/samples_sud_v01';
 var CLASS_PROPERTY = 'class_code';
 var N_TREES = 100;
 var SEED = 42;
@@ -62,7 +62,7 @@ var stack = composite
   .toFloat();
 
 var samples = ee.FeatureCollection(SAMPLES_ASSET);
-print('Samples loaded:', samples.size());
+print('Sud pilot samples loaded:', samples.size());
 
 function addSplit(f) {
   var c = f.geometry().coordinates();
@@ -101,28 +101,17 @@ var validated = stack.sampleRegions({
 }).classify(classifier);
 
 var cm = validated.errorMatrix(CLASS_PROPERTY, 'classification');
-print('Confusion matrix (validation tiles):', cm);
+print('Confusion matrix (Sud validation tiles):', cm);
 print('Overall accuracy:', cm.accuracy());
 print('Kappa:', cm.kappa());
 
-// 10-Class Standard Color Palette:
-// 1: Dense Forest (#006400)
-// 2: Degraded Forest (#7a9900)
-// 3: Shaded Agroforestry (#2e8b57)
-// 4: Smallholder Mosaics (#e8a33d)
-// 5: Industrial Plantations (#8B4513)
-// 6: Savanna/Grassland (#c8d47a)
-// 7: Mangrove (#2e8b8b)
-// 8: Aquatic (#1f5fd0)
-// 9: Urban Fabric (#d43d2a)
-// 10: Bare Soil / Mineral (#c2c2c2)
 var PALETTE = [
   '#006400', '#7a9900', '#2e8b57', '#e8a33d', '#8B4513',
   '#c8d47a', '#2e8b8b', '#1f5fd0', '#d43d2a', '#c2c2c2'
 ];
 
-Map.centerObject(region, 8);
-Map.addLayer(classified, {min: 1, max: 10, palette: PALETTE}, 'LULC ' + REGION + ' ' + YEAR);
+Map.centerObject(region, 7);
+Map.addLayer(classified, {min: 1, max: 10, palette: PALETTE}, 'LULC Sud ' + YEAR);
 
 Export.image.toDrive({
   image: classified,
