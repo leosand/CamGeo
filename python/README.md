@@ -1,9 +1,10 @@
 # CamGeo Python tools
 
-Python package for the offline stages of the pipeline:
+Python package for the offline and analytical stages of the pipeline:
 
 - **Stage 7 — validation**: confusion matrices, overall accuracy, per-class precision/recall/F1 from validation tables exported by GEE.
 - **Stage 8 — exports**: convert samples to GeoParquet, build provenance manifests and STAC items.
+- **AOI & parcel analytics (`camgeo.parcels`)**: spatial zonal statistics, canopy composition, and landscape integrity reporting for conservation perimeters, supply-sheds, or parcel boundaries.
 
 ## Install
 
@@ -50,6 +51,21 @@ manifest = build_provenance_manifest(
     quality={'overall_accuracy_forest_nonforest': 0.83}
 )
 write_manifest(manifest, 'camgeo_lulc_littoral_2024_manifest.json')
+```
+
+### AOI & Parcel Analytics (`camgeo.parcels`)
+
+```python
+from camgeo.parcels import generate_landscape_report
+
+# Pixel counts extracted within an Area of Interest (AOI) boundary
+pixel_counts = {1: 500, 2: 50, 3: 400, 4: 50}  # e.g. 50% dense forest, 40% shaded agroforestry
+report = generate_landscape_report(
+    aoi_id='PARCEL_SUD_0042',
+    pixel_counts=pixel_counts,
+    metadata={'region': 'Sud', 'source': 'pilot_survey'}
+)
+print(report['canopy_integrity'])
 ```
 
 ## Rules

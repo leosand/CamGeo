@@ -16,15 +16,18 @@ This roadmap describes the planned phases of the project. Dates are targets, not
 
 ## Phase 1 — MVP pipeline (Weeks 3–8)
 
-**Goal:** the full processing chain works end-to-end on one pilot tile per region.
+**Goal:** the full processing chain works end-to-end on one pilot tile per region, with prioritized analytical tools for Area of Interest (AOI) / parcel-level verification.
 
 - [x] Multi-sensor GEE feature extraction pipeline (Sentinel-1 SAR dual-pol + Sentinel-2 optical + DEM) — Stage 3
 - [ ] Cloud-free mosaics for one year (Sentinel-2; Sentinel-1 fallback) — Stage 2
-- [ ] First training samples collected (target: 200 per class per region, focusing on shaded agroforestry vs dense forest) — Stage 4
+- [ ] First training samples collected (target: 200 per class per region, focusing on shaded agroforestry vs dense forest in Sud & Littoral) — Stage 4
 - [ ] Random Forest classification per region with 10-class legend — Stage 5
 - [ ] Spatial and temporal filters — Stage 6
+- [ ] Area of Interest (AOI) & parcel analytics module (`camgeo.parcels`): zonal statistics and canopy composition for external boundary polygons
+- [ ] Multi-source consensus integration: cross-referencing CamGeo regional classifications with open global screening data (e.g. Whisp / Forest Data Partnership)
+- [ ] Automated landscape integrity report generator: structured JSON and Markdown audit summaries per supply-shed or forest concession
 
-**Exit criteria:** a classified map exists for at least one tile in each of the 7 regions, produced 100% from repository code. Special attention to the Grand Ouest (West, Northwest, Southwest), where montane forest, grassland, agroforests and plantations are hardest to separate.
+**Exit criteria:** a classified map exists for at least one tile in each of the 7 regions, produced 100% from repository code. Special attention to the Grand Ouest (West, Northwest, Southwest) and southern agroforestry belt, where montane forest, grassland, agroforests and plantations are hardest to separate.
 
 ## Phase 2 — Validation and Collection 0.1 (Weeks 9–12)
 
@@ -32,6 +35,7 @@ This roadmap describes the planned phases of the project. Dates are targets, not
 
 - [ ] Independent validation samples and confusion matrices per region — Stage 7
 - [ ] Accuracy report published (overall accuracy, per-class F1, and Olofsson area-adjusted metrics)
+- [ ] Benchmarking parcel-level and supply-shed zonal extraction against open field points
 - [ ] Maps exported as Cloud-Optimized GeoTIFFs (COGs); samples as GeoParquet — Stage 8
 - [ ] STAC catalogue published; dataset mirrored on Hugging Face with a dataset card
 - [ ] Method note (mini-ATBD) for Collection 0.1
