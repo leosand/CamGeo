@@ -49,20 +49,21 @@
     // To display a published LULC Cloud-Optimized GeoTIFF (COG), set
     // LULC_COG_URL below — see README.md for instructions.
     // ------------------------------------------------------------------
-    var LULC_COG_URL = null; // e.g. 'https://…/camgeo_lulc_littoral_2024_cog.tif'
+    var LULC_COG_URL = null; // e.g. 'https://…/camgeo_lulc_sud_2024_cog.tif'
 
     // Class legend — MUST stay in sync with METHODOLOGY.md §3 and the
     // palette in gee/classification/classify_region.js.
     var CLASSES = [
       { code: 1, name: 'Dense humid forest', color: '#006400' },
       { code: 2, name: 'Degraded / secondary forest', color: '#7a9900' },
-      { code: 3, name: 'Savanna / grassland', color: '#c8d47a' },
+      { code: 3, name: 'Shaded agroforestry', color: '#2e8b57' },
       { code: 4, name: 'Smallholder agriculture', color: '#e8a33d' },
       { code: 5, name: 'Industrial plantation', color: '#8B4513' },
       { code: 6, name: 'Mangrove', color: '#2e8b8b' },
-      { code: 7, name: 'Water', color: '#1f5fd0' },
-      { code: 8, name: 'Urban / built-up', color: '#d43d2a' },
-      { code: 9, name: 'Bare soil / mining', color: '#c2c2c2' }
+      { code: 7, name: 'Savanna / grassland', color: '#c8d47a' },
+      { code: 8, name: 'Water', color: '#1f5fd0' },
+      { code: 9, name: 'Urban / built-up', color: '#d43d2a' },
+      { code: 10, name: 'Bare soil / mining', color: '#c2c2c2' }
     ];
 
     var map = new maplibregl.Map({
@@ -79,8 +80,8 @@
         },
         layers: [{ id: 'osm', type: 'raster', source: 'osm' }]
       },
-      center: [11.5, 5.0], // roughly central Cameroon
-      zoom: 6
+      center: [11.5, 3.5], // centered over the southern forest & cocoa belt
+      zoom: 7
     });
     map.addControl(new maplibregl.NavigationControl());
     map.addControl(new maplibregl.ScaleControl());
@@ -94,7 +95,7 @@
     CLASSES.forEach(function (c) {
       var item = document.createElement('div');
       item.className = 'legend-item';
-      item.innerHTML = '<span class="legend-swatch" style="background:' + c.color + '"></span>' + c.code + '. ' + c.name;
+      item.innerHTML = '<span class="legend-swatch" style="background:' + c.color + '\"></span>' + c.code + '. ' + c.name;
       legend.appendChild(item);
     });
 
@@ -128,9 +129,9 @@
               'circle-stroke-color': '#ffffff',
               'circle-color': [
                 'match', ['get', 'class_code'],
-                1, '#006400', 2, '#7a9900', 3, '#c8d47a', 4, '#e8a33d',
-                5, '#8B4513', 6, '#2e8b8b', 7, '#1f5fd0', 8, '#d43d2a',
-                9, '#c2c2c2', '#999999'
+                1, '#006400', 2, '#7a9900', 3, '#2e8b57', 4, '#e8a33d',
+                5, '#8B4513', 6, '#2e8b8b', 7, '#c8d47a', 8, '#1f5fd0',
+                9, '#d43d2a', 10, '#c2c2c2', '#999999'
               ]
             }
           });

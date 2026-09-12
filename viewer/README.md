@@ -5,10 +5,10 @@ A public web map for CamGeo data, built with [MapLibre GL JS](https://maplibre.o
 ## What it shows
 
 - OpenStreetMap basemap
-- **Region boundaries** of the 7 pilot regions (file `data/regions.geojson`)
+- **Region boundaries** of Cameroon pilot regions (file `data/regions.geojson`)
 - **Sample points** coloured by land cover class (demo file included)
 - **LULC maps** (from Collection 0.1 onwards) as Cloud-Optimized GeoTIFFs through a TiTiler endpoint
-- Click a sample point to see its attributes; legend matches the 9 classes of [../METHODOLOGY.md](../METHODOLOGY.md)
+- Click a sample point to see its attributes; legend matches the 10 classes of [../METHODOLOGY.md](../METHODOLOGY.md) §3
 
 ## Run it locally (2 minutes)
 
@@ -40,7 +40,7 @@ The viewer expects `data/regions.geojson`. Produce it in Google Earth Engine:
 1. Publish a map as a Cloud-Optimized GeoTIFF (COG) reachable by URL (Hugging Face, object storage).
 2. In `index.html`, set:
    ```javascript
-   var LULC_COG_URL = 'https://…/camgeo_lulc_littoral_2024_cog.tif';
+   var LULC_COG_URL = 'https://…/camgeo_lulc_sud_2024_cog.tif';
    ```
 3. The viewer streams it through the free TiTiler demo endpoint (`titiler.xyz`). For production traffic, deploy your own TiTiler on a free tier — see [../docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md).
 
