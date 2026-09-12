@@ -7,48 +7,76 @@
     "type": "Polygon",
     "coordinates": [
       [
-        [8.49, 3.9],
-        [10.05, 3.9],
-        [10.05, 6.35],
-        [8.49, 6.35],
-        [8.49, 3.9]
+        [
+          8.49,
+          3.9
+        ],
+        [
+          10.05,
+          3.9
+        ],
+        [
+          10.05,
+          6.35
+        ],
+        [
+          8.49,
+          6.35
+        ],
+        [
+          8.49,
+          3.9
+        ]
       ]
     ]
   },
-  "bbox": [8.49, 3.9, 10.05, 6.35],
+  "bbox": [
+    8.49,
+    3.9,
+    10.05,
+    6.35
+  ],
   "properties": {
     "datetime": "2024-12-31T00:00:00Z",
     "title": "CamGeo LULC — Sud-Ouest (Southwest) region, 2024",
-    "description": "EXAMPLE FILE — placeholder asset links. Annual land use and land cover map of the Sud-Ouest region of Cameroon for 2024, Collection 0.1. 10 m resolution, 9 classes. Accuracy statement and provenance manifest are attached as assets.",
+    "description": "Annual land use and land cover map of the Sud-Ouest region of Cameroon for 2024, Collection 0.1. 10 m resolution, 10 classes. Accuracy statement and provenance manifest are attached as assets.",
     "camgeo:region": "sud-ouest",
     "camgeo:collection_version": "0.1",
     "camgeo:overall_accuracy": null,
-    "camgeo:method": "Random Forest on Sentinel-2 annual composite + SRTM terrain features, spatial and temporal filters"
+    "camgeo:method": "Random Forest on Sentinel-2 optical composites + Sentinel-1 SAR dual-pol and cross-ratio + SRTM terrain features"
   },
   "assets": {
     "map": {
       "href": "https://example.org/camgeo/collection-0.1/camgeo_lulc_sud-ouest_2024_cog.tif",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "LULC map 2024 (Cloud-Optimized GeoTIFF)",
-      "roles": ["data"]
+      "roles": [
+        "data"
+      ]
     },
     "samples": {
       "href": "https://example.org/camgeo/collection-0.1/camgeo_samples_sud-ouest_2024.parquet",
       "type": "application/vnd.apache.parquet",
       "title": "Training and validation samples (GeoParquet)",
-      "roles": ["metadata"]
+      "roles": [
+        "metadata"
+      ]
     },
     "provenance": {
       "href": "https://example.org/camgeo/collection-0.1/camgeo_lulc_sud-ouest_2024_manifest.json",
       "type": "application/json",
       "title": "Provenance manifest (inputs, code version, parameters)",
-      "roles": ["metadata"]
+      "roles": [
+        "metadata"
+      ]
     },
     "thumbnail": {
       "href": "https://example.org/camgeo/collection-0.1/camgeo_lulc_sud-ouest_2024_thumb.png",
       "type": "image/png",
       "title": "Preview",
-      "roles": ["thumbnail"]
+      "roles": [
+        "thumbnail"
+      ]
     }
   },
   "links": [

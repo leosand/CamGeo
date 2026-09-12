@@ -1,97 +1,48 @@
 # CamGeo Technical Architecture
 
-This document describes the technical stack and data flow. Core constraint: **zero infrastructure cost at startup** — every component must have a permanent free tier.
+This document describes the technical stack and data flow. Core constraint: **zero infrastructure cost at startup** — every component relies on permanent open platforms and non-commercial tiers.
 
-## 1. Design principles
+## 1. Design Principles
 
-1. **Free forever at MVP scale** — no paid service is required to reproduce the project.
-2. **Portable** — code must not be locked to one vendor. The Google Earth Engine (GEE) code is the reference implementation, but the pipeline design (mosaic → features → classify → filter → validate → publish) can be re-implemented with open tools (STAC + xarray + Dask) if we ever need to leave GEE.
-3. **Everything as code** — pipelines, parameters, and documentation live in Git. Data lives in object storage, referenced by manifests.
-4. **Simple over clever** — a Random Forest that the whole community understands beats a deep model nobody can maintain.
+1. **Free Forever at Baseline Scale** — no paid proprietary service is required to reproduce the project.
+2. **Sensor-Fusion Core** — systematically combining optical reflectance (Sentinel-2) with microwave structural sensitivity (Sentinel-1 SAR) to resolve cloud-obscured canopies and agroforestry structure.
+3. **Reproducible Pipeline as Code** — pipelines, parameters, and manifests live in Git; heavy rasters and vectors live in open object registries (Hugging Face / Zenodo).
+4. **Interoperable Open Standards** — STAC cataloging, Cloud-Optimized GeoTIFFs (COG), and GeoParquet.
 
-## 2. Components
+## 2. Architecture Layers
 
-| Layer | Tool (free tier) | Role |
+| Layer | Tool / Standard | Role |
 |---|---|---|
-| Processing | Google Earth Engine (non-commercial) | Satellite mosaics, features, classification, filters |
-| Code hosting | GitHub | Source code, issues, reviews, CI (GitHub Actions) |
-| Data publishing | Hugging Face Datasets + Zenodo | Public datasets, DOI for citations |
-| Catalogue | Static STAC catalogue on GitHub Pages / Cloudflare Pages | Machine-readable index of all assets |
-| Viewer | MapLibre on Cloudflare Pages (later) | Public map browsing |
-| Validation | Collect Earth Online (free) | Visual interpretation of samples |
+| Cloud Processing | Google Earth Engine (non-commercial) | Satellite composites, SAR metrics, feature extraction, Random Forest |
+| Local Analytics | Python (camgeo package, GeoPandas) | Independent validation, error matrix computation, GeoParquet export |
+| Code Hosting & CI | GitHub Actions | Linters (ruff, black), unit tests, automated STAC metadata validation |
+| Data Publishing | Hugging Face Datasets + Zenodo | Open benchmark distribution, versioned releases, DOI minting |
+| Discovery | Static STAC Catalog (GitHub Pages) | Machine-readable indexing of collections, items, and assets |
+| Visualization | MapLibre GL JS | Open-source web preview for raster and sample layers |
 
-**Important legal note:** GEE's free tier is for non-commercial use. Research, publication, and open data production are allowed. If CamGeo one day runs paid services on GEE outputs produced operationally, we must either switch to a paid GEE plan or re-implement the pipeline on the open stack (see §5). This is a Level 4 governance decision.
-
-## 3. Repository structure (planned)
+## 3. Data Flow
 
 ```
-CamGeo/
-├── gee/                  # Google Earth Engine scripts (JavaScript)
-│   ├── mosaics/          # Stage 2: cloud-free composites
-│   ├── features/         # Stage 3: indices and terrain features
-│   ├── classification/   # Stage 5: Random Forest per region
-│   └── filters/          # Stage 6: spatial and temporal filters
-├── python/               # Python package (local tools)
-│   ├── camgeo/           # sampling, validation, export, STAC builders
-│   └── tests/
-├── samples/              # training & validation sample manifests (small files)
-├── stac/                 # static catalogue files
-├── docs/                 # all documentation
-└── .github/              # templates and CI workflows
+Satellite Archives (Sentinel-1 SAR + Sentinel-2 Optical + Copernicus DEM)
+        │
+        ▼
+[GEE] Cloud-filtered multi-temporal composites & SAR dual-pol metrics
+        │
+        ▼
+[GEE] Multi-sensor feature stack (10 m / 20 m resolution)
+        │
+        ▼
+[GEE] Regional Random Forest classification (10 ecological classes)
+        │
+        ▼
+[GEE] Spatial and temporal consistency filters
+        │
+        ▼
+[Python] Area-adjusted validation & confusion matrix generation (Olofsson et al.)
+        │
+        ▼
+[Python] Export: COG rasters + GeoParquet sample vectors + STAC manifests
+        │
+        ▼
+Publication: Hugging Face Datasets + Zenodo (citable DOI) + STAC Catalog
 ```
-
-## 4. Data flow
-
-```
-Satellite archives (Sentinel-1/2, Landsat — free)
-        │
-        ▼
-[GEE] Cloud-free annual mosaics per tile (7 regions)
-        │
-        ▼
-[GEE] Feature stack (bands + indices + terrain)
-        │
-        ▼
-[GEE] Random Forest classification (per region)
-        │  trained on community-labelled samples
-        ▼
-[GEE] Spatial + temporal filters
-        │
-        ▼
-[Python] Validation against independent samples → accuracy report
-        │
-        ▼
-[Python] Export: COG rasters + GeoParquet vectors + STAC metadata
-        │
-        ▼
-Publication: Hugging Face (data) + Zenodo (DOI) + GitHub Pages (catalogue)
-```
-
-## 5. Exit strategy from GEE (portability)
-
-If GEE's terms or quotas ever become a problem, the open-source replacement stack is:
-- **STAC + COG** to find and stream imagery (e.g. from public cloud buckets)
-- **xarray + Dask** for large raster computation
-- **scikit-learn / PyTorch** for models
-- **DuckDB + GeoParquet** for vector analytics
-
-This path costs engineering time instead of licence fees. We keep it viable by isolating GEE-specific code inside the `gee/` folder and keeping sample/export logic in plain Python.
-
-## 6. Environments and CI
-
-- `requirements-dev.txt`: pinned versions for Python tools
-- GitHub Actions (free for this repository): lint (ruff), format check (black), unit tests on every pull request
-- No secrets in the repository. GEE authentication is personal and local; CI never touches GEE.
-
-## 7. What we deliberately do NOT build (yet)
-
-- No custom web platform or user accounts
-- No real-time alerts (Phase 4 candidate)
-- No mobile app
-- No paid API
-
-Each of these is easy to add later; each is a distraction before Collection 0.1 exists.
-
----
-
-*Version 0.1 — August 2026.*

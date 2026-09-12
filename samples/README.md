@@ -1,41 +1,28 @@
-# CamGeo samples
+# CamGeo Samples Manifests & Benchmarks
 
-This folder holds the **manifests** (small metadata files) that describe our training and validation samples. The samples themselves are collected in the labelling tool (Collect Earth Online) and stored as data files outside Git (see ../docs/DATA_POLICY.md — never commit large data).
+This directory contains the metadata manifests and reference schema for training and validation samples. 
 
-## Files
-
-- `samples_template.csv` — the column structure every sample file must follow, with example rows
-- Real sample exports are named `samples_<region>_<date>_vX.csv` and listed in a manifest JSON per release
-
-## Sample schema (each row = one point)
+## Sample Schema (Each row = one point)
 
 | Column | Type | Description |
 |---|---|---|
-| `sample_id` | text | Unique id: `<region>_<tool-id>` (e.g. `Ouest_12345`) |
-| `lon` | number | Longitude, WGS84 (EPSG:4326) |
-| `lat` | number | Latitude, WGS84 |
-| `region` | text | One of: Est, Sud, Adamaoua, Littoral, Ouest, Nord-Ouest, Sud-Ouest |
-| `class_code` | integer | 1–9, from the legend in ../METHODOLOGY.md §3 |
-| `class_name` | text | Class name exactly as in the legend |
-| `label_date` | date (YYYY-MM-DD) | When the label was assigned |
-| `imagery_date` | text | Date or period of the imagery used (e.g. `2024` or `2024-01/2024-06`) |
-| `interpreter` | text | Contributor id or nickname (no personal data beyond consent) |
-| `confidence` | text | `high`, `medium` or `low` — low-confidence samples are always re-reviewed |
-| `source` | text | `ceo` (Collect Earth Online), `visual` (other tool), or `cam-forestnet` (reused open labels) |
-| `review_status` | text | `pending`, `reviewed`, `rejected` |
-| `reviewer` | text | Second contributor who checked the label (empty until reviewed) |
-| `notes` | text | Free text, e.g. "hazy image", "border of two classes" |
+| `sample_id` | text | Unique identifier: `<region>_<tool-id>` (e.g. `Sud_12345`) |
+| `lon` | number | Longitude in decimal degrees (WGS84, EPSG:4326) |
+| `lat` | number | Latitude in decimal degrees (WGS84, EPSG:4326) |
+| `region` | text | GAUL ADM1 region name (e.g. Sud, Littoral, Ouest) |
+| `class_code` | integer | 1–10, according to the scientific legend in `METHODOLOGY.md` |
+| `class_name` | text | Canonical class name matching `METHODOLOGY.md` |
+| `label_date` | date | Date of interpretation (YYYY-MM-DD) |
+| `imagery_date` | text | Acquisition date or composite season (e.g. `2024-Q1`) |
+| `interpreter` | text | Contributor identifier or pseudonym |
+| `confidence` | text | Interpretation certainty: `high`, `medium`, or `low` |
+| `source` | text | Interpretation platform (e.g. `ceo`, `sepal`, `field`) |
+| `review_status` | text | Quality assurance flag: `pending`, `reviewed`, `rejected` |
+| `reviewer` | text | Independent second reviewer identifier |
+| `notes` | text | Field/photo notes (e.g. shade canopy density, secondary species) |
 
-## Workflow
+## Quality Standards
 
-1. **Generate points** with `gee/sampling/generate_sample_points.js` (CSV export).
-2. **Label** in Collect Earth Online following ../docs/LABELLING_GUIDE.md.
-3. **Review**: every sample is checked by a second contributor (`review_status: reviewed`).
-4. **Freeze** per release: reviewed samples are exported to GeoParquet and listed in the Collection's STAC item (see ../stac/).
-
-## Quality rules
-
-- A sample is used for training only if `review_status = reviewed` and `confidence` is `high` or `medium`.
-- `low` confidence samples never enter training; they are re-examined or dropped.
-- 10% of each reviewer's work is randomly re-checked by a third person each month.
-- Splits are by **tile**, never by random points, so training and validation areas do not touch (avoids inflated accuracy).
+- Only samples with `review_status = reviewed` and confidence `high` or `medium` enter model training.
+- Low-confidence or discordant dual-interpretations trigger expert adjudication.
+- Spatial partitioning: train and validation subsets are split by spatial blocks/tiles to eliminate spatial auto-correlation.

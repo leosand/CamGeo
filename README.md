@@ -1,123 +1,66 @@
 # CamGeo
 
-**Open, AI-ready geospatial data for Cameroon — built in the open, by a community.**
+**Open, AI-ready geospatial training data and land cover benchmarks for Cameroon.**
 
-[![Release](https://img.shields.io/github/v/release/leosand/CamGeo?include_prereleases&label=latest%20release)](https://github.com/leosand/CamGeo/releases) [![License: Apache-2.0](https://img.shields.io/badge/code-Apache--2.0-blue)](LICENSE) [![Data: CC-BY-4.0](https://img.shields.io/badge/data-CC--BY--4.0-green)](NOTICE)
+## Overview
 
-*(Badges render fully once the repository is public.)*
+CamGeo is an open science initiative dedicated to solving one of Earth observation's hardest challenges in Central Africa: accurately distinguishing natural tropical forests from complex multi-layered agroforestry systems and monitoring fine-scale canopy changes under persistent equatorial cloud cover.
 
-## What is CamGeo?
+Global land cover products (ESA WorldCover, Google Dynamic World, Hansen GFC) face documented limitations across the Guineo-Congolian biome due to high tree-cover density in traditional shaded tree crops and chronic cloud obscuration. CamGeo provides locally validated, machine-learning-ready datasets, open reproducible pipelines, and standardized spatial benchmarks.
 
-CamGeo is an open science project. Our goal is to produce detailed, well-documented maps and datasets of Cameroon that artificial intelligence (AI) models can learn from directly.
+The project takes inspiration from two established open frameworks:
+- **MapBiomas** (Brazil, mapbiomas.org): transparent annual collections, biome-tailored classification pipelines, and open algorithm theoretical basis documents.
+- **FLAIR-HUB** (France, by IGN): expert-annotated spatial benchmarks, multi-sensor fusion, and standardized distribution via open machine learning registries.
 
-Our first product is a set of annual **land use and land cover (LULC)** maps — maps that show what covers the ground (forest, savanna, farmland, water, cities, mines) and how it changes over time.
+## Core Products
 
-We are inspired by two reference projects:
+1. **AI-Ready Training Benchmarks**: High-confidence point and polygon annotations documented with sensor provenance, temporal windows, and multi-interpreter verification.
+2. **Annual Regional Calibrations**: High-resolution (10–20 m) multi-temporal composites and classification baselines covering the primary ecological zones of Cameroon.
+3. **STAC Discovery Layer**: A standardized SpatioTemporal Asset Catalog indexing rasters, vector geometries, and provenance manifests.
+4. **Peer-Audited Validation Matrices**: Transparent confusion matrices, area-adjusted accuracy metrics, and open validation datasets published under permanent DOIs.
 
-- **MapBiomas** (Brazil, mapbiomas.org): annual LULC maps produced since 1985 with free satellite data, fully open code and open methods.
-- **FLAIR-HUB** (France, by the national mapping agency IGN): a very large, carefully annotated dataset designed to train AI models, distributed on Hugging Face with open source benchmarks.
+## Ecological & Methodological Focus
 
-CamGeo adapts their methods to Cameroon: local classes, local validation, local partners. No code or data from these projects is included — see [NOTICE](NOTICE).
+CamGeo prioritizes distinct structural vegetation classes previously lumped into generic forest or agricultural categories:
+- **Multi-layered agroforestry**: traditional shaded cocoa and coffee tree systems featuring dense upper canopies.
+- **Fine-scale forest disturbance**: canopy openings, selective timber harvest tracks, and secondary regrowth mosaics.
+- **Distinct agricultural morphologies**: industrial monoculture plantations versus heterogeneous smallholder crop systems.
 
-## Current status
+## Scope of Version 0.1
 
-**[v0.1.0 (pre-release)](https://github.com/leosand/CamGeo/releases/tag/v0.1.0)** — full project framing and pipeline skeleton published 2026-08-31. No data products yet. Next gate: G1, first pixels (issue #1). Track progress in [docs/ROADMAP.md](docs/ROADMAP.md) and the [release process](docs/RELEASE_PROCESS.md).
+The initial release covers **7 pilot regions** (~297,000 km², ~62% of Cameroon), capturing the full gradient from dense humid rainforests to the high plateaus and montane ecosystems of the Grand Ouest:
+- **Regions**: Littoral, Sud, Est, Adamaoua, Ouest, Nord-Ouest, Sud-Ouest
+- **Sensors**: Sentinel-2 (optical multi-spectral), Sentinel-1 (C-band dual-pol SAR), SRTM DEM (30 m)
+- **Timeframe**: 2017–present (annual series)
+- **Legend**: 10 ecologically discriminative classes (see [METHODOLOGY.md](METHODOLOGY.md))
 
-## Scope of version 0.1 (the MVP)
+## Principles
 
-Our minimum viable product (MVP) covers **7 regions of Cameroon** — about 297,000 km2, or 62% of the national territory. They were chosen to represent the country's main landscapes, from dense rainforest to the western highlands:
+- **Open by Design**: Apache-2.0 for all software pipelines; CC-BY-4.0 for datasets, labels, and documentation.
+- **Local Epistemic Sovereignty**: Prioritizing in-country ecological knowledge, university research networks, and localized ground observations.
+- **Zero-Barrier Reproducibility**: Architected on open standards (STAC, GeoParquet, Cloud-Optimized GeoTIFFs) with reproducible compute environments.
+- **Uncompromised Transparency**: Full disclosure of model uncertainty, classification errors, and persistent cloud-mask limitations.
 
-| Region | Main landscape | Why it matters |
-|---|---|---|
-| East (Est) | Dense humid forest | Logging, mining, forest concessions |
-| South (Sud) | Forest and farming front | Cocoa, smallholder deforestation |
-| Adamawa (Adamaoua) | Forest–savanna transition | Fast agricultural and pastoral change |
-| Littoral | Coast and city | Industrial plantations, mangroves, Douala urban growth |
-| West (Ouest) | High plateaus (Grassfields) | Very dense population, intensive farming, erosion |
-| Northwest (Nord-Ouest) | Highlands, montane grassland | Pastoralism, farming on slopes, montane forest loss |
-| Southwest (Sud-Ouest) | Humid forest, Mount Cameroon | Agro-industrial plantations, cocoa, mangroves |
-
-The last three regions form the **Grand Ouest**, a block of highlands and densely farmed landscapes that is a hard — and therefore valuable — test for any classification method.
-
-- **Time period**: 2017 to present (the Sentinel-2 satellite era), one map per year
-- **Spatial detail**: 10 to 30 metres per pixel
-- **Classes**: 8–10 land cover classes (see [METHODOLOGY.md](METHODOLOGY.md))
-
-## What we produce
-
-1. **Annual LULC maps** — open data under the CC-BY-4.0 licence
-2. **Training samples** — labelled examples for machine learning (ML), each one documented with its source, date and quality level
-3. **A STAC catalogue** — a standard, machine-readable index of all our data (STAC = SpatioTemporal Asset Catalog)
-4. **Validation reports** — honest accuracy numbers for every release
-5. **Open methods** — every step is documented and reproducible (see [METHODOLOGY.md](METHODOLOGY.md))
-
-## Our principles
-
-- **Open by default**: open code (Apache-2.0), open data (CC-BY-4.0), open methods.
-- **Provenance first**: every dataset records its sources, dates, and processing steps.
-- **Local knowledge matters**: maps are validated with Cameroonian experts and partners.
-- **Zero-cost infrastructure**: we build on free tools (Google Earth Engine for non-commercial research, GitHub, Hugging Face) so that anyone can reproduce our work.
-- **Honest quality**: we publish what works and what does not.
-
-## Repository layout
+## Repository Layout
 
 ```
 CamGeo/
-├── README.md            ← you are here
-├── GOVERNANCE.md        ← who decides what, and how
-├── METHODOLOGY.md       ← the full scientific and technical method
-├── CONTRIBUTING.md      ← how to join and contribute
-├── CODE_OF_CONDUCT.md   ← community rules
-├── CHANGELOG.md         ← what changed in each release
-├── CITATION.cff         ← how to cite this project
-├── SECURITY.md          ← how to report vulnerabilities
-├── LICENSE              ← Apache-2.0 (code)
-├── NOTICE               ← attributions: inspirations (MapBiomas, FLAIR-HUB) and input data sources
-├── gee/                 ← Google Earth Engine pipeline (Stages 1–6)
-├── python/              ← validation and export tools (Stages 7–8)
-├── samples/             ← sample schema and templates
-├── stac/                ← STAC catalogue examples
-├── viewer/              ← public web map (MapLibre)
-├── docs/
-│   ├── ROADMAP.md       ← phases, timeline, kill criteria
-│   ├── RELEASE_PROCESS.md ← delivery gates and how releases are cut
-│   ├── ARCHITECTURE.md  ← technical stack and data flow
-│   ├── DATA_POLICY.md   ← licences, provenance, sensitive data rules
-│   ├── GLOSSARY.md      ← every acronym and technical term, defined
-│   ├── RECRUITMENT.md   ← contributor outreach plan
-│   ├── LABELS.md        ← issue/PR label taxonomy
-│   └── LABELLING_GUIDE.md ← how to label training samples
-└── .github/             ← CI, release automation, issue/PR templates
+├── gee/                  # Earth Engine processing pipelines
+│   ├── mosaics/          # Stage 2: cloud-filtered composites
+│   ├── features/         # Stage 3: multi-band & structural indices
+│   ├── classification/   # Stage 5: regional Random Forest models
+│   └── filters/          # Stage 6: spatial-temporal consistency
+├── python/               # Local validation, STAC export, metrics
+├── samples/              # Training & validation manifests
+├── stac/                 # Static catalog metadata
+└── docs/                 # Methodology, labeling guides, architecture
 ```
 
-## How to contribute
+## Contributing
 
-We welcome developers, geospatial experts, ecologists, students, and anyone with local knowledge of Cameroon. Read [CONTRIBUTING.md](CONTRIBUTING.md), then pick an open issue or propose your own. Current priorities live in the gate issues ([#1–#4](https://github.com/leosand/CamGeo/issues)).
-
-## Governance (short version)
-
-CamGeo is run **collegially**: anyone can propose anything, working groups decide in their own domain by lazy consensus, and a small steering committee only steps in for cross-cutting or contested decisions. Full details in [GOVERNANCE.md](GOVERNANCE.md).
+We welcome contributions from ecologists, remote sensing scientists, software engineers, and local field observers. Consult `CONTRIBUTING.md` and `docs/LABELLING_GUIDE.md` to get started.
 
 ## Licences
 
 - **Code**: Apache License 2.0 (see [LICENSE](LICENSE))
-- **Data and documentation**: Creative Commons Attribution 4.0 (CC-BY-4.0) — you can reuse everything, including commercially, as long as you credit CamGeo
-- **Attributions**: see [NOTICE](NOTICE) — CamGeo's methodology is inspired by MapBiomas and FLAIR-HUB, and our pipeline uses free input data (Sentinel, Landsat, SRTM, CHIRPS, OpenStreetMap). No third-party code or data is redistributed in this repository.
-
-## Key documents
-
-| Document | Read it if you want to... |
-|---|---|
-| [GOVERNANCE.md](GOVERNANCE.md) | Understand roles, decisions, and how to become a maintainer |
-| [METHODOLOGY.md](METHODOLOGY.md) | Understand or challenge the scientific method |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Make your first contribution |
-| [NOTICE](NOTICE) | Check attributions and third-party licences |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | See where the project is going |
-| [docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md) | Understand how releases ship |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Understand the technical stack |
-| [docs/DATA_POLICY.md](docs/DATA_POLICY.md) | Understand data licences and sensitivity rules |
-| [docs/GLOSSARY.md](docs/GLOSSARY.md) | Look up any acronym or technical term |
-
-## Contact
-
-Open an issue in this repository, or reach out through the community channels listed in [CONTRIBUTING.md](CONTRIBUTING.md). Releases: [github.com/leosand/CamGeo/releases](https://github.com/leosand/CamGeo/releases).
+- **Data & Documentation**: Creative Commons Attribution 4.0 International ([CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/))

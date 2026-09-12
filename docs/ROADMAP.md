@@ -1,69 +1,30 @@
-# CamGeo Roadmap
+# CamGeo Scientific Roadmap & Milestones
 
-This roadmap describes the planned phases of the project. Dates are targets, not promises — the project is built by volunteers and partners. Changes to this roadmap follow the governance process (Level 3 or 4, see [../GOVERNANCE.md](../GOVERNANCE.md)).
+This document charts the progressive development of the open CamGeo infrastructure.
 
-## Phase 0 — Foundations (Weeks 1–2)
+## Phase 1 — Framework & Pilot Regional Baselines (Months 1–3)
 
-**Goal:** the project is set up and ready for contributors.
+- [x] Technical architecture, governance rules, and open code repository initialization.
+- [x] Multi-sensor GEE feature extraction pipeline (Sentinel-1 SAR + Sentinel-2 optical + DEM).
+- [ ] Pilot benchmark collection over the Littoral and Sud pilot regions (focusing on shaded agroforestry vs dense forest).
+- [ ] Initial release of 1,500 expert-reviewed training geometries published in GeoParquet format.
 
-- [x] Repository, governance, methodology, contribution guide
-- [ ] Labels and issue templates configured
-- [ ] Google Earth Engine (GEE) project created (non-commercial tier)
-- [ ] Region boundaries and tiling grid defined for the 7 regions (Stage 1 of the pipeline)
-- [ ] First community call announced
+## Phase 2 — Multi-Region Expansion & Public Collection 0.1 (Months 4–6)
 
-**Exit criteria:** a new contributor can set up and run a hello-world GEE script in under 1 hour.
+- [ ] Extension of processing grids across 7 administrative regions covering the major biomes of Cameroon.
+- [ ] Execution of stratified independent accuracy audits (error matrices and F1 scores published per class).
+- [ ] STAC static catalog deployment and dataset distribution via Hugging Face and Zenodo registries.
+- [ ] Publication of the Collection 0.1 Technical Methodology Note (mini-ATBD).
 
-## Phase 1 — MVP pipeline (Weeks 3–8)
+## Phase 3 — National Scale, Temporal Depth & Modeling (Months 7–12)
 
-**Goal:** the full processing chain works end-to-end on one pilot tile per region.
+- [ ] Complete national synthesis across the remaining three northern regions (Centre, Nord, Extrême-Nord).
+- [ ] Retrospective annual time series back-processing to establish multi-year land dynamics baselines.
+- [ ] Deployment of deep learning benchmark baselines (U-Net / vision transformers) evaluated against the Random Forest baseline.
+- [ ] Submission of a peer-reviewed data paper documenting the open benchmark dataset.
 
-- [ ] Cloud-free mosaics for one year (Sentinel-2; Sentinel-1 fallback) — Stage 2
-- [ ] Feature extraction (bands, NDVI/NDWI/NDBI indices, terrain) — Stage 3
-- [ ] First training samples collected (target: 200 per class per region) — Stage 4
-- [ ] Random Forest classification per region — Stage 5
-- [ ] Spatial and temporal filters — Stage 6
+## Continuity & Maintenance Criteria
 
-**Exit criteria:** a classified map exists for at least one tile in each of the 7 regions, produced 100% from repository code. Special attention to the Grand Ouest (West, Northwest, Southwest), where montane forest, grassland and plantations are hardest to separate.
-
-## Phase 2 — Validation and Collection 0.1 (Weeks 9–12)
-
-**Goal:** publish a credible first release.
-
-- [ ] Independent validation samples and confusion matrices per region — Stage 7
-- [ ] Accuracy report published (overall accuracy and per-class F1 scores)
-- [ ] Maps exported as Cloud-Optimized GeoTIFFs (COGs); samples as GeoParquet — Stage 8
-- [ ] STAC catalogue published; dataset mirrored on Hugging Face with a dataset card
-- [ ] Method note (mini-ATBD) for Collection 0.1
-- [ ] DOI minted via Zenodo so the work can be cited
-
-**Exit criteria:** Collection 0.1 is public, documented, reproducible, and citable.
-
-## Phase 3 — Community and improvement (Months 4–6)
-
-**Goal:** grow the contributor base and improve quality.
-
-- [ ] Partnership with at least one Cameroonian university or NGO for validation (candidates: universities of Yaoundé I, Douala, Dschang, Buea)
-- [ ] Time series extended backwards with Landsat (towards 2000)
-- [ ] Experimental deep learning track benchmarked against the Random Forest baseline (FLAIR-HUB inspiration)
-- [ ] Public web viewer (free hosting)
-- [ ] First external users giving feedback
-
-## Phase 4 — Scale (Months 6–12, conditional)
-
-**Goal:** complete national coverage by adding the 3 remaining regions (Centre, North, Far North), and decide on thematic extensions.
-
-Options: deforestation alerts; thematic layers (cocoa, mining, plantations). This phase also explores sustainability: grants, institutional partnerships, and possibly commercial services built on top of the open core — while keeping data and methods open. Any commercial activity is a Level 4 governance decision.
-
-## Kill criteria (honesty clause)
-
-We stop or rethink if, after Phase 2:
-- Overall accuracy for forest / non-forest stays below 70% despite two improvement cycles, **or**
-- Fewer than 3 active contributors remain after 3 months of outreach, **or**
-- The free infrastructure proves insufficient and no funding path exists.
-
-Failing fast and publishing why is a success, not a shame.
-
----
-
-*Version 0.2 — August 2026 (7 regions, including the Grand Ouest).*
+The initiative prioritizes sustainable long-term data quality:
+- If overall forest-vs-non-forest validation falls below 75% accuracy across two consecutive evaluation runs, pipeline parameters undergo mandatory community review.
+- Annual collections are released consistently to maintain unbroken ecological monitoring baselines.

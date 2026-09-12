@@ -1,23 +1,15 @@
 /**
- * CamGeo — Stage 5: Random Forest classification (one region)
- * ------------------------------------------------------------
- * Trains a Random Forest classifier on the community-labelled samples
- * and produces a land cover map for one region and one year.
- *
- * Prerequisite: samples labelled in the labelling tool (Stage 4) and
- * uploaded to GEE as a table asset:
- *   Code Editor → Assets → New → CSV file → upload samples_<region>.csv
- *   then copy the asset path into SAMPLES_ASSET below.
- *   The CSV must contain: lon, lat, class_code (see samples/README.md).
- *
- * Split rule (see samples/README.md): train/validation by TILE, never by
- * random points, so validation areas never touch training areas.
+ * CamGeo — Stage 5: Regional Random Forest classification
+ * --------------------------------------------------------
+ * Trains a Random Forest classifier using multi-sensor features
+ * (Sentinel-2 optical + Sentinel-1 SAR + DEM + Climate) against
+ * reference training samples (10-class scientific legend).
  */
 
 // ------------------------------- Config ------------------------------------
 var REGION = 'Littoral';
 var YEAR = 2024;
-var SAMPLES_ASSET = 'projects/YOUR-PROJECT/assets/camgeo/samples_littoral_v01'; // ← replace
+var SAMPLES_ASSET = 'projects/YOUR-PROJECT/assets/camgeo/samples_littoral_v01';
 var CLASS_PROPERTY = 'class_code';
 var N_TREES = 100;
 var SEED = 42;
@@ -29,7 +21,6 @@ var region = ee.FeatureCollection('FAO/GAUL/2015/level1')
   .filter(ee.Filter.eq('ADM1_NAME', REGION))
   .geometry();
 
-// ------------------------- Feature stack (Stages 2+3) ------------------------
 function maskClouds(image) {
   var scl = image.select('SCL');
   var keep = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10));
@@ -45,6 +36,14 @@ var composite = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .median().clip(region)
   .rename(['blue', 'green', 'red', 'nir', 'swir1', 'swir2']);
 
+var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filterBounds(region)
+  .filterDate(YEAR + '-01-01', (YEAR + 1) + '-01-01')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .select(['VV', 'VH'])
+  .median().clip(region);
+
+var s1_ratio = s1.select('VH').subtract(s1.select('VV')).rename('sar_vh_vv_ratio');
 var dem = ee.Image('USGS/SRTMGL1_003');
 var terrain = ee.Terrain.products(dem).clip(region);
 var rainfall = ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
@@ -55,30 +54,27 @@ var stack = composite
   .addBands(composite.normalizedDifference(['nir', 'red']).rename('ndvi'))
   .addBands(composite.normalizedDifference(['green', 'nir']).rename('ndwi'))
   .addBands(composite.normalizedDifference(['swir1', 'nir']).rename('ndbi'))
+  .addBands(s1.select(['VV', 'VH']))
+  .addBands(s1_ratio)
   .addBands(dem.select('elevation').clip(region))
   .addBands(terrain.select(['slope', 'aspect']))
   .addBands(rainfall)
   .toFloat();
 
-// ----------------------------- Samples import --------------------------------
 var samples = ee.FeatureCollection(SAMPLES_ASSET);
 print('Samples loaded:', samples.size());
 
-// Deterministic tile-based split: samples in the same ~0.1° tile always fall
-// in the same subset (train 70% / validation 30%).
 function addSplit(f) {
   var c = f.geometry().coordinates();
   var kx = ee.Number(ee.List(c).get(0)).multiply(10).floor();
   var ky = ee.Number(ee.List(c).get(1)).multiply(10).floor();
-  var bucket = kx.multiply(31).add(ky).mod(10); // pseudo-hash of the tile
-  return f.set('split', bucket.lt(7));           // true = train
+  var bucket = kx.multiply(31).add(ky).mod(10);
+  return f.set('split', bucket.lt(7));
 }
 var split = samples.map(addSplit);
 var trainSamples = split.filter(ee.Filter.eq('split', true));
 var valSamples = split.filter(ee.Filter.eq('split', false));
-print('Train:', trainSamples.size(), 'Validation:', valSamples.size());
 
-// --------------------------- Train and classify ------------------------------
 var training = stack.sampleRegions({
   collection: trainSamples,
   properties: [CLASS_PROPERTY],
@@ -97,7 +93,6 @@ var classifier = ee.Classifier.smileRandomForest({
 
 var classified = stack.classify(classifier).byte().rename('lulc');
 
-// ----------------------- Quick validation (details: Stage 7) -----------------
 var validated = stack.sampleRegions({
   collection: valSamples,
   properties: [CLASS_PROPERTY],
@@ -109,15 +104,26 @@ var cm = validated.errorMatrix(CLASS_PROPERTY, 'classification');
 print('Confusion matrix (validation tiles):', cm);
 print('Overall accuracy:', cm.accuracy());
 print('Kappa:', cm.kappa());
-// Per-class precision/recall/F1 are computed offline: export the validation
-// table below and run python/camgeo/validation.py (Stage 7).
 
-// --------------------------------- Display -----------------------------------
-var PALETTE = ['#006400', '#7a9900', '#c8d47a', '#e8a33d', '#8B4513', '#2e8b8b', '#1f5fd0', '#d43d2a', '#c2c2c2'];
+// 10-Class Standard Color Palette:
+// 1: Dense Forest (#006400)
+// 2: Degraded Forest (#7a9900)
+// 3: Shaded Agroforestry (#2e8b57)
+// 4: Smallholder Mosaics (#e8a33d)
+// 5: Industrial Plantations (#8B4513)
+// 6: Savanna/Grassland (#c8d47a)
+// 7: Mangrove (#2e8b8b)
+// 8: Aquatic (#1f5fd0)
+// 9: Urban Fabric (#d43d2a)
+// 10: Bare Soil / Mineral (#c2c2c2)
+var PALETTE = [
+  '#006400', '#7a9900', '#2e8b57', '#e8a33d', '#8B4513',
+  '#c8d47a', '#2e8b8b', '#1f5fd0', '#d43d2a', '#c2c2c2'
+];
+
 Map.centerObject(region, 8);
-Map.addLayer(classified, {min: 1, max: 9, palette: PALETTE}, 'LULC ' + REGION + ' ' + YEAR);
+Map.addLayer(classified, {min: 1, max: 10, palette: PALETTE}, 'LULC ' + REGION + ' ' + YEAR);
 
-// --------------------------------- Exports -----------------------------------
 Export.image.toDrive({
   image: classified,
   description: 'camgeo_lulc_' + REGION + '_' + YEAR + '_raw',

@@ -1,88 +1,56 @@
-# CamGeo Labelling Guide
+# CamGeo Visual Interpretation & Labelling Manual
 
-This guide teaches any contributor — no coding or GIS background needed — how to label training samples: looking at a satellite image point and deciding which land cover class it belongs to. Good labels are the heart of CamGeo: the classifier only learns what we teach it.
+Accurate machine learning models depend entirely on rigorous training annotations. This manual instructs analysts on identifying complex landscape classes across Cameroon.
 
-## 1. Setup (15 minutes)
+## 1. General Photo-Interpretation Rules
 
-1. Get a batch of points from the Validation & Local Knowledge WG (a CSV produced by `gee/sampling/generate_sample_points.js`).
-2. Open the labelling tool (Collect Earth Online — free, browser-based; the WG coordinator gives you the project link).
-3. For each point, the tool shows very high resolution imagery (e.g. Google basemap, NICFI Planet) and Sentinel-2 context. You answer one question: **what covers the ground at this point?**
+- Always assess a **100 m × 100 m spatial buffer (1 hectare)** around the coordinate, rather than the isolated central pixel.
+- Verify historical imagery across both dry and wet seasons to distinguish permanent tree crops from cyclical annual agriculture.
+- When an observation shows ambiguous multi-class mixtures, select the dominant canopy stratum and record secondary components in the metadata notes.
 
-## 2. Golden rules
+## 2. Structural Identification Keys (10 Classes)
 
-1. **Label what you see, at the date of the imagery** — not what you remember or assume.
-2. **Judge the point's surroundings**, about 1 hectare around it (100 m × 100 m): land cover is about the area, not the exact pixel.
-3. **Set your confidence honestly**: `high` (sure), `medium` (probable), `low` (uncertain). Low is not a failure — it triggers expert review.
-4. **When two classes mix**, pick the one covering the majority of the surroundings, and explain in the notes.
-5. **Never guess sensitive sites precisely** (see ../docs/DATA_POLICY.md §4). If an image seems to show something sensitive, flag it in the notes instead of labelling details.
+### Class 1 — Dense Humid Forest
+- **Visual Texture**: Continuous dark-green canopy, irregular canopy height with emergent trees, unbroken texture along river galleries.
+- **Distinction**: Natural forest exhibits structural heterogeneity, unlike plantations which show strict geometric rows.
 
-## 3. Class-by-class visual keys
+### Class 2 — Degraded / Selective Disturbance
+- **Visual Texture**: Canopy interrupted by small gaps (< 0.5 ha), narrow access tracks, or localized patches of lighter secondary regrowth.
+- **Temporal Clue**: Logging roads and felling gaps appear as sharp laterite incisions that gradually fade into secondary vegetation over 12–24 months.
 
-### Class 1 — Dense humid forest
-- Looks like: continuous dark-green carpet, rough texture, no visible clearings; along rivers it forms unbroken galleries.
-- Confused with: industrial plantations (class 5) and dense secondary forest (class 2).
-- Tip: natural forest has irregular texture and mixed tones; plantations are suspiciously regular (straight lines, same colour).
+### Class 3 — Shaded Agroforestry (Tree Crops)
+- **Visual Texture**: Semi-closed canopy with uneven, pebbled texture. Occasional shade trees emerge over a denser, lower layer of perennial crops (cocoa, coffee).
+- **Landscape Context**: Located in proximity to village settlements, along tertiary roads, or transitioning between smallholder plots and dense forest.
+- **Distinction from Class 1**: Lower canopy height variance, presence of footpaths, and subtle seasonal canopy management.
+- **Distinction from Class 5**: No uniform planting grid or monoculture geometry.
 
-### Class 2 — Degraded / secondary forest
-- Looks like: forest with visible gaps, logging tracks (thin lines), patches of lighter regrowth, younger even canopy.
-- Confused with: dense forest (class 1) and forest-savanna mosaic (class 3).
-- Tip: in the East and South, follow the tracks — straight thin lines entering forest often mean selective logging.
+### Class 4 — Open Agricultural Mosaics
+- **Visual Texture**: Patchwork quilt of small, irregular fields at various vegetative stages (bare soil, growing crops, herbaceous fallow).
+- **Temporal Clue**: High seasonal turnover in vegetation indices between wet and dry seasons.
 
-### Class 3 — Savanna / grassland
-- Looks like: light green to yellowish open areas, smooth texture, scattered trees or shrubs; burns appear as dark scars seasonally.
-- Confused with: bare soil (class 9) in the dry season, and montane grassland in the Grand Ouest (still class 3).
-- Tip: grass turns brown seasonally but the soil is rarely fully exposed; if texture suggests vegetation, prefer class 3 over 9.
+### Class 5 — Industrial Monocultures
+- **Visual Texture**: Rigid rectangular blocks, geometric road grids, uniform crown size, and uniform tree age (oil palm, rubber, banana).
+- **Extents**: Continuous spatial blocks exceeding 10 hectares.
 
-### Class 4 — Smallholder agriculture
-- Looks like: a mosaic of small, irregular plots with different colours and states (growing, harvested, fallow), often around villages; slash-and-burn creates patchy edges inside forest.
-- Confused with: degraded forest (class 2) and savanna (class 3).
-- Tip: look for the "quilt" pattern and proximity to houses or paths. In the Grand Ouest, fields climb slopes in dense mosaics.
+### Class 6 — Savanna & Shrublands
+- **Visual Texture**: Open herbaceous cover with scattered shrubs or stunted trees; common in Adamawa and the montane grasslands of the Grand Ouest.
+- **Temporal Clue**: Pronounced dry-season browning and occasional burn scars.
 
-### Class 5 — Industrial plantation
-- Looks like: very regular blocks (grid or contour lines), uniform colour and height, often with visible access roads and buildings; oil palm shows dotted rows in high resolution.
-- Confused with: dense forest (class 1).
-- Tip: regularity is the key — nature does not plant in straight lines. Common in Littoral and Sud-Ouest (palm, banana, rubber), tea in the Nord-Ouest.
+### Class 7 — Mangrove Ecosystems
+- **Visual Texture**: Dense tidal forest lining estuaries, delta channels, and coastal mudflats (Littoral and Sud-Ouest).
 
-### Class 6 — Mangrove (Littoral and Sud-Ouest only)
-- Looks like: dense green forest growing in coastal water or mudflats, with winding water channels inside.
-- Confused with: lowland dense forest (class 1) and water (class 7).
-- Tip: location decides — tidal coastal zone + dense vegetation = mangrove. Open water without vegetation = class 7.
+### Class 8 — Aquatic Surfaces
+- **Visual Texture**: Permanent water bodies (rivers, lakes, reservoirs) displaying uniform dark or sediment-turbid tones.
 
-### Class 7 — Water
-- Looks like: dark, flat surfaces (rivers, lakes, reservoirs); turbid rivers can look light brown.
-- Confused with: cloud shadows and wet bare soil.
-- Tip: compare two dates if available — water bodies keep their shape; shadows move.
+### Class 9 — Impervious / Urban Fabric
+- **Visual Texture**: High concentration of roof surfaces, orthogonal street networks, industrial structures, and compacted ground.
 
-### Class 8 — Urban / built-up
-- Looks like: dense clusters of roofs (grey, red, white), road grids, bare yards; small villages count too.
-- Confused with: bare soil (class 9) and smallholder agriculture (class 4).
-- Tip: roofs form sharp geometric patterns; check the road network — buildings line up along roads.
+### Class 10 — Bare Soil & Mineral Surfaces
+- **Visual Texture**: Completely unvegetated ground, active quarries, open-cast artisanal mining pits, and active erosion scarps.
 
-### Class 9 — Bare soil / mining
-- Looks like: exposed earth (bright orange/white), quarries, mine pits, eroded slopes, fresh construction sites.
-- Confused with: dry-season savanna (class 3) and urban areas (class 8).
-- Tip: mining in the East often appears as bright patches along rivers; erosion scars in the Grand Ouest sit on steep slopes.
+## 3. Metadata Recording Standards
 
-## 4. Regional pitfalls (Grand Ouest focus)
-
-- **Montane forest vs montane grassland** (Ouest, Nord-Ouest): at altitude, forest sits in valleys and on humid slopes while grassland covers plateaus — use terrain shape as a clue.
-- **Plantation vs forest** (Sud-Ouest): Mount Cameroon area has both; check for block regularity and access roads.
-- **Haze and clouds**: in humid zones, if the image is hazy, lower your confidence rather than forcing a class.
-
-## 5. Review process
-
-1. You label → `review_status: pending`.
-2. A second contributor re-checks → `reviewed` or sends it back with a comment.
-3. Disagreements go to a third, experienced reviewer; the final call is written in the notes.
-4. Every month, 10% of all labels are randomly re-checked (see ../samples/README.md).
-
-## 6. FAQ
-
-- **"The image is too cloudy to tell."** → confidence `low`, note "hazy image", move on.
-- **"The point falls exactly on a boundary."** → label the majority of the 1-hectare surroundings, note "boundary".
-- **"I know this place and it changed recently."** → label what the *imagery date* shows, and add your field knowledge in the notes — it is valuable for validation.
-- **"I made a mistake."** → tell the WG coordinator; labels are versioned and fixable. Mistakes are normal; silent errors are not.
-
----
-
-*Version 0.1 — August 2026. Improvements welcome via pull request.*
+Every annotated sample record must conform to the required schema:
+- `confidence`: `high` (unambiguous signature), `medium` (requires multi-date validation), `low` (flagged for senior review).
+- `review_status`: `pending`, `reviewed`, `rejected`.
+- `notes`: Document secondary characteristics (e.g., presence of shade trees, drainage ditches, recent clearing).

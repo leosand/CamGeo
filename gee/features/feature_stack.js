@@ -1,14 +1,15 @@
 /**
- * CamGeo — Stage 3: feature stack
- * --------------------------------
- * Builds the full feature image used for classification:
- *   spectral bands (from the Stage 2 composite)
- *   + vegetation / water / built-up indices (NDVI, NDWI, NDBI)
- *   + terrain features (elevation, slope, aspect from SRTM)
- *   + annual rainfall (CHIRPS, climate context)
+ * CamGeo — Stage 3: multi-sensor feature stack
+ * ---------------------------------------------
+ * Builds the complete multi-sensor feature image used for classification:
+ *   - Sentinel-2 optical spectral bands (from Stage 2 cloud-masked composite)
+ *   - Spectral indices: NDVI (greenness), NDWI (water/moisture), NDBI (built-up)
+ *   - Sentinel-1 SAR C-band dual-polarization: VV, VH, and cross-ratio (VH/VV)
+ *     (critical for resolving volume scattering in shaded agroforestry and canopy gaps)
+ *   - Topographic metrics from SRTM: elevation, slope, aspect
+ *   - Climate context: annual precipitation from CHIRPS
  *
- * Standalone script: it rebuilds the annual composite so it can run alone
- * in the GEE Code Editor. Set REGION and YEAR like in Stage 2.
+ * Standalone script: set REGION and YEAR, paste into the GEE Code Editor, click Run.
  */
 
 // ------------------------------- Config ------------------------------------
@@ -28,6 +29,7 @@ function maskClouds(image) {
   return image.updateMask(keep).divide(10000).copyProperties(image, ['system:time_start']);
 }
 
+// --------------------------- Optical (Sentinel-2) ---------------------------
 var composite = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .filterBounds(region)
   .filterDate(YEAR + '-01-01', (YEAR + 1) + '-01-01')
@@ -38,33 +40,40 @@ var composite = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .clip(region)
   .rename(['blue', 'green', 'red', 'nir', 'swir1', 'swir2']);
 
-// ------------------------------- Indices ------------------------------------
-// NDVI  = vegetation greenness  (NIR - RED) / (NIR + RED)
-// NDWI  = open water            (GREEN - NIR) / (GREEN + NIR)
-// NDBI  = built-up areas        (SWIR1 - NIR) / (SWIR1 + NIR)
 var ndvi = composite.normalizedDifference(['nir', 'red']).rename('ndvi');
 var ndwi = composite.normalizedDifference(['green', 'nir']).rename('ndwi');
 var ndbi = composite.normalizedDifference(['swir1', 'nir']).rename('ndbi');
 
-// ------------------------------- Terrain ------------------------------------
-// SRTM DEM (30 m): elevation, slope and aspect.
-// Terrain features are critical in the Grand Ouest highlands to separate
-// montane forest from lowland forest and to model erosion-prone farmland.
+// ------------------------------ Radar (Sentinel-1) --------------------------
+// C-band SAR penetrates cloud cover. The cross-ratio (VH/VV) is highly sensitive
+// to canopy roughness, structural complexity, and vegetation volume scattering.
+var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
+  .filterBounds(region)
+  .filterDate(YEAR + '-01-01', (YEAR + 1) + '-01-01')
+  .filter(ee.Filter.eq('instrumentMode', 'IW'))
+  .select(['VV', 'VH'])
+  .median()
+  .clip(region);
+
+var s1_ratio = s1.select('VH').subtract(s1.select('VV')).rename('sar_vh_vv_ratio');
+
+// ------------------------------- Topography ---------------------------------
 var dem = ee.Image('USGS/SRTMGL1_003');
-var terrain = ee.Terrain.products(dem).clip(region); // bands: slope, aspect, hillshade
+var terrain = ee.Terrain.products(dem).clip(region);
 var elevation = dem.select('elevation').clip(region);
 
-// ------------------------------- Climate ------------------------------------
-// CHIRPS daily rainfall summed over the year (climate context, ~5 km).
+// --------------------------------- Climate ----------------------------------
 var rainfall = ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
   .filterDate(YEAR + '-01-01', (YEAR + 1) + '-01-01')
   .sum()
   .clip(region)
   .rename('rainfall_annual');
 
-// ------------------------------ Final stack ---------------------------------
+// ------------------------------ Combined Stack ------------------------------
 var stack = composite
   .addBands([ndvi, ndwi, ndbi])
+  .addBands(s1.select(['VV', 'VH']))
+  .addBands(s1_ratio)
   .addBands(elevation)
   .addBands(terrain.select(['slope', 'aspect']))
   .addBands(rainfall)
@@ -73,19 +82,8 @@ var stack = composite
 print('Feature stack bands:', stack.bandNames());
 
 // --------------------------------- Display ----------------------------------
-Map.centerObject(region, 8);
-Map.addLayer(ndvi, {min: 0, max: 0.9, palette: ['white', 'green']}, 'NDVI');
-Map.addLayer(terrain.select('slope'), {min: 0, max: 30, palette: ['blue', 'yellow', 'red']}, 'Slope (degrees)');
-
-// ------------------- Stage 5 stub (after Stage 4 sampling) ------------------
-// Once training samples are collected (see METHODOLOGY.md, Stage 4):
-//
-// var samples = ee.FeatureCollection('projects/YOUR-PROJECT/assets/camgeo/samples_v01');
-// var classifier = ee.Classifier.smileRandomForest({numberOfTrees: 100, seed: 42})
-//   .setOutputMode('CLASSIFICATION')
-//   .train({features: samples, classProperty: 'landcover', inputProperties: stack.bandNames()});
-// var classified = stack.classify(classifier);
-// Map.addLayer(classified.randomVisualizer(), {}, 'LULC classification');
+Map.centerObject(region, 8);\nMap.addLayer(ndvi, {min: 0, max: 0.9, palette: ['white', 'green']}, 'NDVI');
+Map.addLayer(s1_ratio, {min: -15, max: -3, palette: ['blue', 'yellow', 'red']}, 'SAR VH/VV Ratio');
 
 // --------------------------------- Export -----------------------------------
 Export.image.toDrive({
