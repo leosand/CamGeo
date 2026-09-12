@@ -10,7 +10,6 @@ This roadmap describes the planned phases of the project. Dates are targets, not
 - [x] Labels and issue templates configured
 - [x] Google Earth Engine (GEE) project created (non-commercial tier)
 - [x] Region boundaries and tiling grid defined (Stage 1 of the pipeline)
-- [ ] First community call announced
 
 **Exit criteria:** a new contributor can set up and run a hello-world GEE script in under 1 hour.
 
@@ -46,7 +45,7 @@ This roadmap describes the planned phases of the project. Dates are targets, not
 **Goal:** scale the validated pipeline to the remaining 6 pilot regions across Cameroon.
 
 - [ ] Extend processing to Littoral, Est, and the Grand Ouest highlands (West, Northwest, Southwest)
-- [ ] Adaptation to secondary crops (oil palm plantations in Littoral, highland farming in Ouest)
+- [ ] Adaptation to secondary crops
 - [ ] Partnership with Cameroonian university departments (Yaoundé I, Douala, Dschang, Buea) for regional validation
 - [ ] Public web map viewer (MapLibre) live with multi-region layers
 
