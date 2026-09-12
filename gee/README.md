@@ -14,12 +14,12 @@ JavaScript scripts for **Google Earth Engine (GEE)** — the free, non-commercia
 |---|---|---|---|
 | 1 | `tiling/regions_grid.js` | Stage 1 — study area and tiling | 10 km × 10 km tile grid for the 7 regions |
 | 2 | `mosaics/s2_annual_composite.js` | Stage 2 — cloud-free mosaics | Annual Sentinel-2 composite per region |
-| 3 | `features/feature_stack.js` | Stage 3 — feature extraction | Stack: bands + NDVI/NDWI/NDBI + terrain |
+| 3 | `features/feature_stack.js` | Stage 3 — feature extraction | Multi-sensor stack: bands + indices + SAR cross-ratio + terrain |
 | 4 | `sampling/generate_sample_points.js` | Stage 4a — sampling design | Random points CSV for the labelling tool |
-| 5 | `classification/classify_region.js` | Stage 5 — Random Forest | Raw LULC map + validation table (needs samples asset) |
+| 5 | `classification/classify_region.js` | Stage 5 — Random Forest | Raw 10-class LULC map + validation table |
 | 6 | `filters/postprocess_filters.js` | Stage 6 — cleaning | Filtered map (spatial + temporal) |
 
-Stages 7 (accuracy reports) and 8 (GeoParquet/STAC exports) run in Python — see `../python/`.
+Stages 7 (accuracy reports), 8 (GeoParquet/STAC exports), and AOI/parcel analytics run in Python — see `../python/`.
 
 Each script is standalone (the GEE editor runs one script at a time). Configuration is at the top of each file.
 
@@ -27,5 +27,5 @@ Each script is standalone (the GEE editor runs one script at a time). Configurat
 
 - Every script must run top to bottom without manual edits.
 - Region names follow the FAO GAUL level-1 naming used in the scripts (`Est`, `Sud`, `Adamaoua`, `Littoral`, `Ouest`, `Nord-Ouest`, `Sud-Ouest`).
-- Exports go to your own Google Drive or GEE assets; publish nothing without a provenance manifest (see ../docs/DATA_POLICY.md).
+- Exports go to your own Google Drive or GEE assets; publish nothing without a provenance manifest (see [../docs/DATA_POLICY.md](../docs/DATA_POLICY.md)).
 - Watch your monthly EECU quota (free tier); test on one small region first (`Littoral` is the smallest).

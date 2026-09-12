@@ -33,7 +33,7 @@ CamGeo/
 │   ├── classification/   # Stage 5: Random Forest per region
 │   └── filters/          # Stage 6: spatial and temporal filters
 ├── python/               # Python package (local tools)
-│   ├── camgeo/           # sampling, validation, export, STAC builders
+│   ├── camgeo/           # validation, AOI/parcel analytics, export, STAC builders
 │   └── tests/
 ├── samples/              # training & validation sample manifests (small files)
 ├── stac/                 # static catalogue files

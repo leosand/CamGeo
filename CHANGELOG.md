@@ -7,6 +7,18 @@ Versioning: this repository uses `vMAJOR.MINOR.PATCH` (e.g. v0.1.0). Data produc
 
 ## [Unreleased]
 
+### Added
+
+- Area-of-Interest (AOI) & parcel analytics module (`python/camgeo/parcels.py`): zonal statistics, area breakdown in hectares, canopy integrity scoring, and audit-ready landscape report generation with full test suite (`python/tests/test_parcels.py`).
+- Radar backscatter fusion in GEE feature extraction (`gee/features/feature_stack.js`): Sentinel-1 SAR C-band dual-polarization (VV, VH) and cross-ratio (VH/VV) to resolve canopy volume scattering and structure.
+- Classification legend expanded to 10 scientific classes in `METHODOLOGY.md`, formalizing shaded agroforestry (Class 3) and canopy disturbance (Class 2).
+- Standard 10-class color palette and multi-sensor support in GEE classification (`gee/classification/classify_region.js`) and post-processing filters (`gee/filters/postprocess_filters.js`).
+
+### Changed
+
+- Harmonized class nomenclature (`smallholder agriculture`, `industrial plantation`) across methodology, labeling manual, STAC metadata, sample schemas, and analytical tools.
+- Prioritized pilot delivery gates (G1–G3) in `docs/RELEASE_PROCESS.md` and `docs/ROADMAP.md` focusing on southern agroforestry belt calibration (Sud & Littoral).
+
 ## [v0.1.0] - 2026-08-31
 
 First pre-release: full project framing and a complete (unexecuted) pipeline skeleton.

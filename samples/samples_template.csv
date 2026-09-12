@@ -1,5 +1,5 @@
 sample_id,lon,lat,region,class_code,class_name,label_date,imagery_date,interpreter,confidence,source,review_status,reviewer,notes
 EXAMPLE_Sud_0001,11.5125,2.9421,Sud,3,shaded agroforestry,2026-09-15,2024,contributor_demo,high,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — cocoa under multi-layered shade trees"
-EXAMPLE_Ouest_0002,10.4125,5.4721,Ouest,4,open agricultural mosaics,2026-09-15,2024,contributor_demo,high,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — smallholder food crop patchwork"
-EXAMPLE_Sud-Ouest_0003,9.7021,4.5832,Sud-Ouest,5,industrial monocultures,2026-09-15,2024,contributor_demo,medium,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — regular oil palm plantation grid"
+EXAMPLE_Ouest_0002,10.4125,5.4721,Ouest,4,smallholder agriculture,2026-09-15,2024,contributor_demo,high,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — smallholder food crop patchwork"
+EXAMPLE_Sud-Ouest_0003,9.7021,4.5832,Sud-Ouest,5,industrial plantation,2026-09-15,2024,contributor_demo,medium,ceo,reviewed,reviewer_demo,"EXAMPLE ROW — regular oil palm plantation grid"
 EXAMPLE_Est_0004,14.1120,3.0870,Est,1,dense humid forest,2026-09-15,2024,contributor_demo,high,ceo,pending,,"EXAMPLE ROW — closed canopy natural rainforest"

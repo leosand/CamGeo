@@ -18,7 +18,7 @@ Every pre-release on this repository must have:
 1. A **tag** `vX.Y.Z` on `main`
 2. The **pre-release flag** set to `true` while the project is below v1.0.0
 3. **Release notes** extracted from `CHANGELOG.md` (one section per version — the workflow fails if the section is missing)
-4. A **passing quality gate**: Python tests green + STAC examples valid (the release workflow runs them; a red gate blocks the release)
+4. A **passing quality gate**: Python tests green (validation + parcel analytics) + STAC examples valid (the release workflow runs them; a red gate blocks the release)
 5. **Licence and attribution intact**: `LICENSE`, `NOTICE`, `docs/DATA_POLICY.md` present and unchanged since last review
 
 ## 3. Delivery gates → versions
@@ -26,11 +26,11 @@ Every pre-release on this repository must have:
 | Gate | Target version | Criteria to cut the pre-release |
 |---|---|---|
 | G0 — Framing | v0.1.0 | Repo, governance, methodology, pipeline skeleton (done 2026-08-30) |
-| G1 — First pixels | v0.2.0 | Stage 1–2 executed: tile grid exported + first mosaic visually validated on 2+ regions |
-| G2 — First labels | v0.3.0 | ≥ 400 reviewed samples per region in the labelling tool |
-| G3 — First maps | v0.4.0 | Stage 5–6 run on all 7 regions; quick GEE accuracy printed |
-| G4 — Collection 0.1 | v0.9.0 | Stage 7 report published (OA ≥ 80% forest/non-forest target), STAC live, DOI minted, viewer updated |
-| G5 — Collection 1.0 | v1.0.0 | Full re-validation, national extension decision (Phase 4), governance review — first non-pre-release |
+| G1 — First pixels | v0.2.0 | Stage 1–2 executed: tile grid exported + first mosaic visually validated on 2+ priority regions (Sud and Littoral pilot focus) |
+| G2 — First labels | v0.3.0 | ≥ 400 reviewed samples per region in the labelling tool, prioritizing dual-interpretation of shaded agroforestry (Class 3) vs dense forest (Class 1) on pilot tiles |
+| G3 — First maps & AOI metrics | v0.4.0 | Stage 5–6 run on pilot regions; GEE accuracy printed + initial parcel/AOI zonal statistics evaluated via `camgeo.parcels` |
+| G4 — Collection 0.1 | v0.9.0 | Stage 7 report published (OA ≥ 80% forest/non-forest target), STAC live, DOI minted, viewer updated, benchmark parcel integrity suite verified |
+| G5 — Collection 1.0 | v1.0.0 | Full re-validation across all 7 regions, national extension decision (Phase 4), governance review — first non-pre-release |
 
 ## 4. How to cut a pre-release (one click)
 
@@ -58,4 +58,4 @@ A broken release is never edited silently: mark it as draft, publish a patch rel
 
 ---
 
-*Version 0.1 — August 2026.*
+*Version 0.2 — August 2026.*
