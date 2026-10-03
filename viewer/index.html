@@ -152,7 +152,10 @@
         var tilesUrl = 'https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url='
           + encodeURIComponent(LULC_COG_URL);
         map.addSource('lulc', { type: 'raster', tiles: [tilesUrl], tileSize: 256 });
-        map.addLayer({ id: 'lulc-layer', type: 'raster', source: 'lulc' }, 'regions-outline');
+        // The region layer is loaded from an optional file, so it may not exist
+        // yet — fall back to adding the LULC raster on top of the basemap.
+        var beforeId = map.getLayer('regions-outline') ? 'regions-outline' : undefined;
+        map.addLayer({ id: 'lulc-layer', type: 'raster', source: 'lulc' }, beforeId);
         var toggle = document.getElementById('toggle-lulc');
         toggle.disabled = false;
         toggle.checked = true;
