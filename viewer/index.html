@@ -18,7 +18,11 @@
     #panel h1 { font-size: 16px; margin: 0 0 4px; }
     #panel p { margin: 4px 0; color: #444; }
     .layer-toggle { display: block; margin: 6px 0; }
-    .legend-item { display: flex; align-items: center; margin: 2px 0; }
+    .legend-item {
+      display: flex; align-items: center; margin: 2px 0;
+      cursor: pointer; user-select: none;
+    }
+    .legend-item input { margin: 0 6px 0 0; }
     .legend-swatch {
       width: 14px; height: 14px; border-radius: 3px;
       margin-right: 8px; border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0;
@@ -47,10 +51,9 @@
       <label class="layer-toggle"><input type="checkbox" id="toggle-lulc" disabled /> LULC map (available at Collection 0.1)</label>
     </div>
     <hr />
-    <div id="legend"></div>
     <div class="filter-group">
-      <h2>Filter by class</h2>
-      <div id="class-filters"></div>
+      <h2>Classes — click to filter</h2>
+      <div id="legend"></div>
       <label class="filter-class">
         <input type="checkbox" id="filter-reset" checked />
         All classes
@@ -120,39 +123,27 @@ var activeRegion = '';
       document.getElementById('status').textContent = text;
     }
 
-// Build the legend.
+// Build the legend. Each entry is also the filter checkbox for its class,
+    // so the 10 classes are listed once instead of twice.
     var legend = document.getElementById('legend');
     CLASSES.forEach(function (c) {
-      var item = document.createElement('div');
+      var item = document.createElement('label');
       item.className = 'legend-item';
-      item.innerHTML = '<span class="legend-swatch" style="background:' + c.color + '"></span>' + c.code + '. ' + c.name;
-      legend.appendChild(item);
-    });
-
-    // Build the class filter checkboxes, one per legend entry.
-    var classFilters = document.getElementById('class-filters');
-    CLASSES.forEach(function (c) {
-      var label = document.createElement('label');
-      label.className = 'filter-class';
-      label.innerHTML = '<input type="checkbox" value="' + c.code + '" />'
+      item.innerHTML = '<input type="checkbox" value="' + c.code + '" checked />'
         + '<span class="legend-swatch" style="background:' + c.color + '"></span>'
         + c.code + '. ' + c.name;
-      classFilters.appendChild(label);
-    });
-
-    // Every class is shown until the user unchecks one.
-    CLASSES.forEach(function (c) {
+      legend.appendChild(item);
       activeClassCodes.push(c.code);
-      classFilters.querySelector('input[value="' + c.code + '"]').checked = true;
     });
 
-    classFilters.addEventListener('change', function () {
-      var checked = classFilters.querySelectorAll('input:checked');
+    legend.addEventListener('change', function () {
+      var checked = legend.querySelectorAll('input:checked');
       var codes = [];
       for (var i = 0; i < checked.length; i++) {
         codes.push(parseInt(checked[i].value, 10));
       }
       activeClassCodes = codes;
+      syncAllClassesCheckbox();
       applyFilters();
     });
 
@@ -169,11 +160,18 @@ var activeRegion = '';
     });
 
     function setAllClasses(enabled) {
-      var boxes = classFilters.querySelectorAll('input');
+      var boxes = legend.querySelectorAll('input');
       for (var i = 0; i < boxes.length; i++) {
         boxes[i].checked = enabled;
       }
       activeClassCodes = enabled ? CLASSES.map(function (c) { return c.code; }) : [];
+    }
+
+    // Keep "All classes" in step with the individual boxes: it is checked
+    // only when every class is selected.
+    function syncAllClassesCheckbox() {
+      document.getElementById('filter-reset').checked =
+        activeClassCodes.length === CLASSES.length;
     }
 
     map.on('load', function () {
