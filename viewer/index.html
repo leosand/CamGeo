@@ -18,12 +18,25 @@
     #panel h1 { font-size: 16px; margin: 0 0 4px; }
     #panel p { margin: 4px 0; color: #444; }
     .layer-toggle { display: block; margin: 6px 0; }
-    .legend-item { display: flex; align-items: center; margin: 2px 0; }
+    .legend-item {
+      display: flex; align-items: center; margin: 2px 0;
+      cursor: pointer; user-select: none;
+    }
+    .legend-item input { margin: 0 6px 0 0; }
     .legend-swatch {
       width: 14px; height: 14px; border-radius: 3px;
       margin-right: 8px; border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0;
     }
     .note { font-size: 11px; color: #777; margin-top: 8px; }
+    .filter-group { margin-top: 10px; }
+    .filter-group h2 {
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: #666; margin: 0 0 6px;
+    }
+    .filter-class { display: flex; align-items: center; margin: 3px 0; }
+    .filter-class input { margin: 0 6px 0 0; }
+    #region-select { width: 100%; margin-top: 4px; }
+    #empty-note { color: #a63d2f; font-weight: 600; }
     a { color: #1d76db; }
   </style>
 </head>
@@ -38,7 +51,20 @@
       <label class="layer-toggle"><input type="checkbox" id="toggle-lulc" disabled /> LULC map (available at Collection 0.1)</label>
     </div>
     <hr />
-    <div id="legend"></div>
+    <div class="filter-group">
+      <h2>Classes — click to filter</h2>
+      <div id="legend"></div>
+      <label class="filter-class">
+        <input type="checkbox" id="filter-reset" checked />
+        All classes
+      </label>
+    </div>
+    <div class="filter-group">
+      <h2>Filter by region</h2>
+      <select id="region-select"></select>
+    </div>
+    <p class="note" id="point-count"></p>
+    <p class="note" id="empty-note" hidden>No sample matches this combination.</p>
     <p class="note" id="status">Loading…</p>
   </div>
 
@@ -50,6 +76,13 @@
     // LULC_COG_URL below — see README.md for instructions.
     // ------------------------------------------------------------------
     var LULC_COG_URL = null; // e.g. 'https://…/camgeo_lulc_sud_2024_cog.tif'
+
+// Sample points currently loaded, kept in memory so the class and region
+// filters can count matches without another network request.
+var samples = [];
+// Selected class codes (empty means "every class").
+var activeClassCodes = [];
+var activeRegion = '';
 
     // Class legend — MUST stay in sync with METHODOLOGY.md §3 and the
     // palette in gee/classification/classify_region.js.
@@ -90,14 +123,56 @@
       document.getElementById('status').textContent = text;
     }
 
-    // Build the legend.
+// Build the legend. Each entry is also the filter checkbox for its class,
+    // so the 10 classes are listed once instead of twice.
     var legend = document.getElementById('legend');
     CLASSES.forEach(function (c) {
-      var item = document.createElement('div');
+      var item = document.createElement('label');
       item.className = 'legend-item';
-      item.innerHTML = '<span class="legend-swatch" style="background:' + c.color + '\"></span>' + c.code + '. ' + c.name;
+      item.innerHTML = '<input type="checkbox" value="' + c.code + '" checked />'
+        + '<span class="legend-swatch" style="background:' + c.color + '"></span>'
+        + c.code + '. ' + c.name;
       legend.appendChild(item);
+      activeClassCodes.push(c.code);
     });
+
+    legend.addEventListener('change', function () {
+      var checked = legend.querySelectorAll('input:checked');
+      var codes = [];
+      for (var i = 0; i < checked.length; i++) {
+        codes.push(parseInt(checked[i].value, 10));
+      }
+      activeClassCodes = codes;
+      syncAllClassesCheckbox();
+      applyFilters();
+    });
+
+    // "All classes" is the inverse of the individual checkboxes.
+    document.getElementById('filter-reset').addEventListener('change', function (e) {
+      setAllClasses(e.target.checked);
+      applyFilters();
+    });
+
+    var regionSelect = document.getElementById('region-select');
+    regionSelect.addEventListener('change', function (e) {
+      activeRegion = e.target.value;
+      applyFilters();
+    });
+
+    function setAllClasses(enabled) {
+      var boxes = legend.querySelectorAll('input');
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].checked = enabled;
+      }
+      activeClassCodes = enabled ? CLASSES.map(function (c) { return c.code; }) : [];
+    }
+
+    // Keep "All classes" in step with the individual boxes: it is checked
+    // only when every class is selected.
+    function syncAllClassesCheckbox() {
+      document.getElementById('filter-reset').checked =
+        activeClassCodes.length === CLASSES.length;
+    }
 
     map.on('load', function () {
       // --- Region boundaries (produced by gee/tiling/regions_grid.js export) ---
@@ -120,6 +195,7 @@
       fetch('data/demo_points.geojson')
         .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
         .then(function (geojson) {
+          samples = geojson.features || [];
           map.addSource('points', { type: 'geojson', data: geojson });
           map.addLayer({
             id: 'sample-points', type: 'circle', source: 'points',
@@ -144,6 +220,9 @@
               .setHTML('<b>' + p.sample_id + '</b><br/>Class: ' + p.class_name + '<br/>Region: ' + p.region)
               .addTo(map);
           });
+
+          populateRegions();
+          applyFilters();
         })
         .catch(function () { /* demo points optional */ });
 
@@ -152,13 +231,80 @@
         var tilesUrl = 'https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url='
           + encodeURIComponent(LULC_COG_URL);
         map.addSource('lulc', { type: 'raster', tiles: [tilesUrl], tileSize: 256 });
-        map.addLayer({ id: 'lulc-layer', type: 'raster', source: 'lulc' }, 'regions-outline');
+        // The region layer is loaded from an optional file, so it may not exist
+        // yet — fall back to adding the LULC raster on top of the basemap.
+        var beforeId = map.getLayer('regions-outline') ? 'regions-outline' : undefined;
+        map.addLayer({ id: 'lulc-layer', type: 'raster', source: 'lulc' }, beforeId);
         var toggle = document.getElementById('toggle-lulc');
         toggle.disabled = false;
         toggle.checked = true;
         bindToggle('toggle-lulc', 'lulc-layer');
       }
     });
+
+    // Fill the region dropdown from the points actually loaded, so it works
+    // for the demo file and for real samples without any hardcoded list.
+    function populateRegions() {
+      var seen = {};
+
+      // An explicit "all regions" entry, selected by default. Without it the
+      // browser picks the first region on its own, so the menu would show a
+      // region that is not actually filtered on.
+      var all = document.createElement('option');
+      all.value = '';
+      all.textContent = 'All regions';
+      regionSelect.appendChild(all);
+
+      samples.forEach(function (f) {
+        var name = f.properties && f.properties.region;
+        if (name && !seen[name]) {
+          seen[name] = true;
+          var option = document.createElement('option');
+          option.value = name;
+          option.textContent = name;
+          regionSelect.appendChild(option);
+        }
+      });
+      regionSelect.disabled = samples.length === 0;
+    }
+
+    // A sample is visible when its class is selected and, if a region is
+    // chosen, when it also belongs to that region.
+    function isVisible(f) {
+      var p = f.properties || {};
+      if (activeClassCodes.indexOf(p.class_code) === -1) return false;
+      if (activeRegion && p.region !== activeRegion) return false;
+      return true;
+    }
+
+    // Apply the filters to the map layer, then report how many points match.
+    function applyFilters() {
+      if (!map.getLayer('sample-points')) return;
+
+      // A MapLibre filter is an "all" of the two conditions. An empty class
+      // list must match nothing, so it falls back to an impossible value.
+      var conditions = [
+        ['in', ['get', 'class_code'], activeClassCodes.length
+          ? activeClassCodes
+          : [-1]]
+      ];
+      if (activeRegion) {
+        conditions.push(['==', ['get', 'region'], activeRegion]);
+      }
+      map.setFilter('sample-points', ['all'].concat(conditions));
+
+      var shown = samples.filter(isVisible);
+      var classesShown = {};
+      shown.forEach(function (f) { classesShown[f.properties.class_code] = true; });
+      var classCount = Object.keys(classesShown).length;
+
+      document.getElementById('point-count').textContent =
+        shown.length + ' of ' + samples.length + ' samples shown · '
+        + classCount + ' class' + (classCount === 1 ? '' : 'es');
+
+      document.getElementById('empty-note').hidden =
+        !(samples.length && !shown.length);
+    }
 
     function bindToggle(inputId, layerId) {
       document.getElementById(inputId).addEventListener('change', function (e) {
