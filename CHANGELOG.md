@@ -15,6 +15,7 @@ Versioning: this repository uses `vMAJOR.MINOR.PATCH` (e.g. v0.1.0). Data produc
 - Standard 10-class color palette and multi-sensor support in GEE classification (`gee/classification/classify_region.js`) and post-processing filters (`gee/filters/postprocess_filters.js`).
 - Interactive filters in the public web viewer (`viewer/index.html`): samples can be narrowed by land cover class (the legend entries double as checkboxes, so the 10 classes are listed once) and by region (dropdown built from the loaded samples, no hardcoded list). A live counter reports how many samples match, and an explicit message appears when the combination matches nothing.
 - Legend guard tests (`python/tests/test_legend.py`): the 10-class legend is now checked across `METHODOLOGY.md` §3, `viewer/index.html` and both GEE scripts, plus two invariants the CI could not see before (no escaped newlines in GEE scripts, every script defaults to the Sud pilot).
+- First reference sample set for the Sud pilot (`Data_Issue_1/`, Gate G2 — issue #2): 349 points labelled in Collect Earth Online, with the four-column CEO import file and the plot-level and sample-level CEO exports. The `email` column carried by the tool export was removed before publication (`docs/DATA_POLICY.md` §5), and progress-report PDFs containing real names are deliberately excluded.
 
 ### Changed
 
