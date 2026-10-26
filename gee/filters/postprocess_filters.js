@@ -14,10 +14,10 @@
  */
 
 // ------------------------------- Config ------------------------------------
-var REGION = 'Littoral';
+var REGION = 'Sud';        // MVP focal region: Sud (cocoa belt)
 var YEAR = 2024;
 var DEMO_MODE = true;
-var CLASSIFIED_ASSET = 'projects/YOUR-PROJECT/assets/camgeo/lulc_littoral_2024_raw'; // used when DEMO_MODE = false
+var CLASSIFIED_ASSET = 'projects/YOUR-PROJECT/assets/camgeo/lulc_sud_2024_raw'; // used when DEMO_MODE = false
 var MMU_PIXELS = 50; // 50 pixels at 10 m ≈ 0.5 hectare (minimum mapping unit)
 // ----------------------------------------------------------------------------
 
@@ -29,14 +29,16 @@ var region = ee.FeatureCollection('FAO/GAUL/2015/level1')
 var classified;
 if (DEMO_MODE) {
   // Toy classification: forest where NDVI > 0.6 on the annual composite.
-  var maskClouds = function(image) {\n    var scl = image.select('SCL');
+  var maskClouds = function(image) {
+    var scl = image.select('SCL');
     var keep = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10));
     return image.updateMask(keep).divide(10000).copyProperties(image, ['system:time_start']);
   };
   var composite = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
     .filterBounds(region)
     .filterDate(YEAR + '-01-01', (YEAR + 1) + '-01-01')
-    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 70))\n    .map(maskClouds)
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 70))
+    .map(maskClouds)
     .select(['B4', 'B8'])
     .median().clip(region);
   var ndvi = composite.normalizedDifference(['B8', 'B4']);
@@ -47,7 +49,8 @@ if (DEMO_MODE) {
 
 // ------------------------------ Spatial filter -------------------------------
 // Replaces patches smaller than the MMU with the majority class around them.
-function spatialFilter(image, minPixels) {\n  var majority = image.focalMode({radius: 1, units: 'pixels', kernelType: 'square'});
+function spatialFilter(image, minPixels) {
+  var majority = image.focalMode({radius: 1, units: 'pixels', kernelType: 'square'});
   var patchSize = image.connectedPixelCount({maxSize: minPixels, eightConnected: true});
   return image.where(patchSize.lt(minPixels), majority);
 }
@@ -80,7 +83,7 @@ var temporalClean = neighbours.reduce(ee.Reducer.mode()).rename('lulc').byte();
 // 10-Class Standard Color Palette for production, 2-class for DEMO_MODE
 var PALETTE_10 = [
   '#006400', '#7a9900', '#2e8b57', '#e8a33d', '#8B4513',
-  '#c8d47a', '#2e8b8b', '#1f5fd0', '#d43d2a', '#c2c2c2'
+  '#2e8b8b', '#c8d47a', '#1f5fd0', '#d43d2a', '#c2c2c2'
 ];
 var vizParams = DEMO_MODE
   ? {min: 0, max: 1, palette: ['#e8a33d', '#006400']}

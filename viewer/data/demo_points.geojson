@@ -38,7 +38,7 @@
       "properties": {
         "sample_id": "DEMO_Adamaoua_004",
         "region": "Adamaoua",
-        "class_code": 3,
+        "class_code": 7,
         "class_name": "savanna / grassland"
       },
       "geometry": { "type": "Point", "coordinates": [13.583, 7.35] }
@@ -48,7 +48,7 @@
       "properties": {
         "sample_id": "DEMO_Littoral_005",
         "region": "Littoral",
-        "class_code": 8,
+        "class_code": 9,
         "class_name": "urban / built-up"
       },
       "geometry": { "type": "Point", "coordinates": [9.7679, 4.0511] }

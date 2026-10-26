@@ -61,14 +61,20 @@ def per_class_metrics(cm: pd.DataFrame) -> pd.DataFrame:
         real_c = int(cm.loc[c].sum())
         precision = tp / predicted_as_c if predicted_as_c else 0.0
         recall = tp / real_c if real_c else 0.0
-        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
-        rows.append({
-            "class_code": c,
-            "support": real_c,
-            "precision": round(precision, 4),
-            "recall": round(recall, 4),
-            "f1": round(f1, 4),
-        })
+        f1 = (
+            2 * precision * recall / (precision + recall)
+            if (precision + recall)
+            else 0.0
+        )
+        rows.append(
+            {
+                "class_code": c,
+                "support": real_c,
+                "precision": round(precision, 4),
+                "recall": round(recall, 4),
+                "f1": round(f1, 4),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -89,7 +95,7 @@ def accuracy_report(
 
     summary = {
         "samples_csv": str(samples_csv),
-        "n_validation_samples": int(len(df)),
+        "n_validation_samples": len(df),
         "overall_accuracy": round(overall_accuracy(cm), 4),
         "per_class": metrics.to_dict(orient="records"),
     }

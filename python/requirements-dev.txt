@@ -3,5 +3,5 @@ pandas>=2.0
 geopandas>=1.0
 pyarrow>=14.0
 pytest>=8.0
-ruff>=0.5
-black>=24.0
+ruff==0.17.0
+black==26.10.1
