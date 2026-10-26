@@ -9,7 +9,7 @@ Builds the three artefacts every published asset needs (see docs/DATA_POLICY.md)
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -42,7 +42,7 @@ def build_provenance_manifest(
     return {
         "asset": asset,
         "collection": collection,
-        "produced_at": datetime.now(timezone.utc).date().isoformat(),
+        "produced_at": datetime.now(UTC).date().isoformat(),
         "code_tag": code_tag,
         "inputs": inputs,
         "licence": licence,
