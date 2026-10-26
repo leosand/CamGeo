@@ -107,7 +107,7 @@ print('Kappa:', cm.kappa());
 
 var PALETTE = [
   '#006400', '#7a9900', '#2e8b57', '#e8a33d', '#8B4513',
-  '#c8d47a', '#2e8b8b', '#1f5fd0', '#d43d2a', '#c2c2c2'
+  '#2e8b8b', '#c8d47a', '#1f5fd0', '#d43d2a', '#c2c2c2'
 ];
 
 Map.centerObject(region, 7);
