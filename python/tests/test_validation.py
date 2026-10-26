@@ -19,10 +19,12 @@ from camgeo.validation import confusion_matrix, overall_accuracy, per_class_metr
 #   correct = 2 + 1 + 1 = 4, total = 6  ->  OA = 4/6 = 0.6667
 #   class 1: precision = 2/2 = 1.0, recall = 2/3 = 0.6667, F1 = 0.8
 
-FIXTURE = pd.DataFrame({
-    "class_code": [1, 1, 1, 2, 2, 3],
-    "classification": [1, 1, 2, 2, 3, 3],
-})
+FIXTURE = pd.DataFrame(
+    {
+        "class_code": [1, 1, 1, 2, 2, 3],
+        "classification": [1, 1, 2, 2, 3, 3],
+    }
+)
 
 
 def test_confusion_matrix_shape_and_values():
