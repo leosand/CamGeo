@@ -13,6 +13,7 @@ Versioning: this repository uses `vMAJOR.MINOR.PATCH` (e.g. v0.1.0). Data produc
 - Radar backscatter fusion in GEE feature extraction (`gee/features/feature_stack.js`): Sentinel-1 SAR C-band dual-polarization (VV, VH) and cross-ratio (VH/VV) to resolve canopy volume scattering and structure.
 - Classification legend expanded to 10 scientific classes in `METHODOLOGY.md`, formalizing shaded agroforestry (Class 3) and canopy disturbance (Class 2).
 - Standard 10-class color palette and multi-sensor support in GEE classification (`gee/classification/classify_region.js`) and post-processing filters (`gee/filters/postprocess_filters.js`).
+- Interactive filters in the public web viewer (`viewer/index.html`): samples can be narrowed by land cover class (the legend entries double as checkboxes, so the 10 classes are listed once) and by region (dropdown built from the loaded samples, no hardcoded list). A live counter reports how many samples match, and an explicit message appears when the combination matches nothing.
 
 ### Changed
 
@@ -24,6 +25,8 @@ Versioning: this repository uses `vMAJOR.MINOR.PATCH` (e.g. v0.1.0). Data produc
 
 - `stac/examples/collection-example.json` was double JSON-encoded (a single line of escaped text), so `json.loads` failed at line 1 and the STAC validation job reported the collection as unresolvable, cascading into `item-example.json`. The file is now plain, readable JSON; content is unchanged.
 - Lint/format drift in `python/camgeo/` (`exporters.py` `UP017`, `parcels.py` `I001`, `validation.py` `RUF046`) and `python/tests/test_validation.py`, restoring a green CI on `main`.
+- Wrong land cover codes in the viewer demo dataset (`viewer/data/demo_points.geojson`): the Adamaoua sample declared `class_code` 3 (shaded agroforestry) for a savanna / grassland point (now 7), and the Littoral sample declared 8 (water) for an urban / built-up point (now 9). Both now match `METHODOLOGY.md` §3 and the legend in `viewer/index.html`.
+- The LULC raster is now added safely when `viewer/data/regions.geojson` is absent: the viewer falls back to drawing it above the basemap instead of referencing a missing layer id.
 
 ## [v0.1.0] - 2026-08-31
 
