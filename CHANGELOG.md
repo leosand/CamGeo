@@ -18,6 +18,12 @@ Versioning: this repository uses `vMAJOR.MINOR.PATCH` (e.g. v0.1.0). Data produc
 
 - Harmonized class nomenclature (`smallholder agriculture`, `industrial plantation`) across methodology, labeling manual, STAC metadata, sample schemas, and analytical tools.
 - Prioritized pilot delivery gates (G1–G3) in `docs/RELEASE_PROCESS.md` and `docs/ROADMAP.md` focusing on southern agroforestry belt calibration (Sud & Littoral).
+- Pinned `ruff==0.17.0` and `black==26.10.1` in `python/requirements-dev.txt`: the unpinned `ruff>=0.5` let new rules (`UP017`, `RUF046`) turn the CI red without any code change.
+
+### Fixed
+
+- `stac/examples/collection-example.json` was double JSON-encoded (a single line of escaped text), so `json.loads` failed at line 1 and the STAC validation job reported the collection as unresolvable, cascading into `item-example.json`. The file is now plain, readable JSON; content is unchanged.
+- Lint/format drift in `python/camgeo/` (`exporters.py` `UP017`, `parcels.py` `I001`, `validation.py` `RUF046`) and `python/tests/test_validation.py`, restoring a green CI on `main`.
 
 ## [v0.1.0] - 2026-08-31
 

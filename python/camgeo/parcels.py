@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 CLASS_NAMES = {
     1: "dense humid forest",
     2: "degraded / secondary forest",
@@ -37,13 +36,15 @@ def compute_class_breakdown(
         count = pixel_counts[code]
         area_ha = round(count * pixel_area_ha, 2)
         pct = round((count / total_pixels) * 100.0, 2)
-        breakdown.append({
-            "class_code": code,
-            "class_name": CLASS_NAMES.get(code, "unknown"),
-            "pixel_count": count,
-            "area_ha": area_ha,
-            "percentage": pct,
-        })
+        breakdown.append(
+            {
+                "class_code": code,
+                "class_name": CLASS_NAMES.get(code, "unknown"),
+                "pixel_count": count,
+                "area_ha": area_ha,
+                "percentage": pct,
+            }
+        )
     return breakdown
 
 
