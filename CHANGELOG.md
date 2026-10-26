@@ -5,9 +5,7 @@ All notable changes to CamGeo are documented here.
 Format: based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: this repository uses `vMAJOR.MINOR.PATCH` (e.g. v0.1.0). Data products carry their own version (**Collection 0.1, 0.2, 1.0...**) — see [docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md).
 
-## [Unreleased]
-
-### Added
+## [v0.2.0] - 2026-10-26
 
 - Area-of-Interest (AOI) & parcel analytics module (`python/camgeo/parcels.py`): zonal statistics, area breakdown in hectares, canopy integrity scoring, and audit-ready landscape report generation with full test suite (`python/tests/test_parcels.py`).
 - Radar backscatter fusion in GEE feature extraction (`gee/features/feature_stack.js`): Sentinel-1 SAR C-band dual-polarization (VV, VH) and cross-ratio (VH/VV) to resolve canopy volume scattering and structure.
